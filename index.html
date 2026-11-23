@@ -89,7 +89,7 @@
 <section class="strip" aria-label="What we cover">
   <div class="wrap strip-row">
     {%- for s in site.data.hero.strip %}
-    <p>{% if s.link and s.link != "" %}<a href="{{ s.link }}">{% endif %}<strong>{{ s.bold | escape }}</strong> {{ s.text | escape }}{% if s.link and s.link != "" %}</a>{% endif %}</p>
+    <p>{% if s.link and s.link != "" %}<a href="{{ s.link }}">{% endif %}<strong>{{ s.bold | escape | replace: 'air con', 'air&nbsp;con' | replace: 'Air con', 'Air&nbsp;con' }}</strong> {{ s.text | escape }}{% if s.link and s.link != "" %}</a>{% endif %}</p>
     {%- endfor %}
   </div>
 </section>
@@ -97,7 +97,7 @@
 <section class="feature" id="kitchens">
   <div class="wrap feature-grid">
     <div class="feature-copy">
-      <h2 class="h2">{{ site.data.kitchens.heading | escape }}</h2>
+      <h2 class="h2">{{ site.data.kitchens.heading | escape | replace: 'air con', 'air&nbsp;con' | replace: 'Air con', 'Air&nbsp;con' }}</h2>
       {%- for t in site.data.kitchens.paragraphs %}
       <p>{{ t | escape }}</p>
       {%- endfor %}
@@ -121,7 +121,7 @@
 <section class="feature feature-alt" id="bathrooms">
   <div class="wrap feature-grid flip">
     <div class="feature-copy">
-      <h2 class="h2">{{ site.data.bathrooms.heading | escape }}</h2>
+      <h2 class="h2">{{ site.data.bathrooms.heading | escape | replace: 'air con', 'air&nbsp;con' | replace: 'Air con', 'Air&nbsp;con' }}</h2>
       {%- for t in site.data.bathrooms.paragraphs %}
       <p>{{ t | escape }}</p>
       {%- endfor %}
@@ -143,7 +143,7 @@
 <section class="ceilings" id="ceilings">
   {% include pic.html src=site.data.ceilings.image alt="" class="ceilings-bg" %}
   <div class="wrap ceilings-inner">
-    <h2 class="h2">{{ site.data.ceilings.heading | escape }}</h2>
+    <h2 class="h2">{{ site.data.ceilings.heading | escape | replace: 'air con', 'air&nbsp;con' | replace: 'Air con', 'Air&nbsp;con' }}</h2>
     <p class="lede">{{ site.data.ceilings.intro | escape }}</p>
     <div class="ceil-cols">
       {%- for col in site.data.ceilings.columns %}
@@ -160,7 +160,7 @@
 <section class="feature" id="aircon">
   <div class="wrap feature-grid">
     <div class="feature-copy">
-      <h2 class="h2">{{ site.data.aircon.heading | escape }}</h2>
+      <h2 class="h2">{{ site.data.aircon.heading | escape | replace: 'air con', 'air&nbsp;con' | replace: 'Air con', 'Air&nbsp;con' }}</h2>
       {%- for t in site.data.aircon.paragraphs %}
       <p>{{ t | escape }}</p>
       {%- endfor %}
@@ -186,11 +186,11 @@
 <section class="calc" id="ac-price">
   <div class="wrap calc-grid">
     <div class="calc-intro">
-      <h2 class="h2">{{ site.data.aircon.calc_heading | escape }}</h2>
+      <h2 class="h2">{{ site.data.aircon.calc_heading | escape | replace: 'air con', 'air&nbsp;con' | replace: 'Air con', 'Air&nbsp;con' }}</h2>
       <p>{{ site.data.aircon.calc_intro | escape }}</p>
       <p class="muted small">{{ site.data.aircon.calc_note | escape }}</p>
     </div>
-    <form class="calc-form" id="ac-calc" novalidate>
+    <form class="calc-form" id="ac-calc" novalidate data-code="{% if site.data.offer.enabled %}{{ site.data.offer.code | upcase }}{% endif %}" data-percent="{{ site.data.offer.percent }}">
       <fieldset class="calc-units">
         <legend>How many rooms need air con?</legend>
         <input type="hidden" name="units" value="1">
@@ -224,6 +224,9 @@
         <div class="field"><label for="ac-range">Kit range</label><select id="ac-range" name="range"></select></div>
         <div class="field"><label for="ac-postcode">Postcode</label><input id="ac-postcode" name="postcode" autocomplete="postal-code" placeholder="LE4"></div>
       </div>
+      {%- if site.data.offer.enabled %}
+      <div class="field code-field"><label for="ac-code">Discount code (optional)</label><input id="ac-code" name="code" autocomplete="off" autocapitalize="characters" placeholder="{{ site.data.offer.code | upcase }}"></div>
+      {%- endif %}
       <button class="btn btn-full" type="submit">Show my price</button>
       <div class="calc-result" id="ac-result" tabindex="-1" hidden>
         <p class="calc-total-label">Your installed price</p>
@@ -231,8 +234,32 @@
         <p class="calc-system" id="ac-system"></p>
         <table class="calc-table"><tbody id="ac-rows"></tbody></table>
         <p class="muted small">Guide price. We confirm it after a free survey, before any work starts.</p>
-        <button type="button" class="btn btn-full" id="ac-send">Send this price with my enquiry</button>
+        <div class="calc-actions">
+          <button type="button" class="btn btn-full" id="ac-book-open">Book my install and pay deposit</button>
+          <button type="button" class="btn btn-full btn-outline" id="ac-send">Just send me this price</button>
+        </div>
       </div>
+    </form>
+    <form class="calc-form book-form" id="ac-book" novalidate hidden data-email="{{ site.data.contact.email }}" data-pay="{{ site.data.contact.payment_link }}">
+      <h3 class="book-title">Book your install day</h3>
+      <p class="book-sum" id="ac-book-sum"></p>
+      <div class="calc-row">
+        <div class="field"><label for="b-name">Full name</label><input id="b-name" name="name" autocomplete="name" required></div>
+        <div class="field"><label for="b-phone">Phone</label><input id="b-phone" name="phone" type="tel" autocomplete="tel" required></div>
+      </div>
+      <div class="field"><label for="b-email">Email</label><input id="b-email" name="email" type="email" autocomplete="email" required></div>
+      <div class="field"><label for="b-address">Address</label><input id="b-address" name="address" autocomplete="street-address" required></div>
+      <div class="calc-row">
+        <div class="field"><label for="b-postcode">Postcode</label><input id="b-postcode" name="postcode" autocomplete="postal-code" required></div>
+        <div class="field"><label for="b-date">Preferred install date</label><input id="b-date" name="date" type="date" required></div>
+      </div>
+      <div class="field"><label for="b-slot">Time</label><select id="b-slot" name="slot"><option value="Morning (8am to 12pm)">Morning (8am to 12pm)</option><option value="Afternoon (12pm to 5pm)">Afternoon (12pm to 5pm)</option><option value="Any time">Any time</option></select></div>
+      <label class="check"><input type="checkbox" name="terms" id="b-terms" required> I agree to the <a href="terms.html" target="_blank" rel="noopener">terms and conditions</a></label>
+      <p class="form-error" id="b-error" role="alert" hidden></p>
+      <button class="btn btn-full" type="submit" id="b-submit">Book and pay deposit</button>
+      <p class="muted small" id="b-paynote"></p>
+      <button type="button" class="link-btn" id="ac-book-back">Back to my price</button>
+      <div class="book-done" id="ac-book-done" tabindex="-1" hidden></div>
     </form>
   </div>
 </section>
@@ -240,7 +267,7 @@
 <section class="feature feature-alt" id="extensions">
   <div class="wrap feature-grid flip">
     <div class="feature-copy">
-      <h2 class="h2">{{ site.data.extensions.heading | escape }}</h2>
+      <h2 class="h2">{{ site.data.extensions.heading | escape | replace: 'air con', 'air&nbsp;con' | replace: 'Air con', 'Air&nbsp;con' }}</h2>
       {%- for t in site.data.extensions.paragraphs %}
       <p>{{ t | escape }}</p>
       {%- endfor %}
@@ -263,7 +290,7 @@
 
 <section class="services" id="services">
   <div class="wrap">
-    <h2 class="h2">{{ site.data.services.heading | escape }}</h2>
+    <h2 class="h2">{{ site.data.services.heading | escape | replace: 'air con', 'air&nbsp;con' | replace: 'Air con', 'Air&nbsp;con' }}</h2>
     <div class="svc-list{% if site.data.services.cards.size == 2 %} svc-two{% endif %}">
       {%- for card in site.data.services.cards %}
       <article class="svc">
@@ -280,7 +307,7 @@
 
 <section class="how" id="how">
   <div class="wrap">
-    <h2 class="h2">{{ site.data.how.heading | escape }}</h2>
+    <h2 class="h2">{{ site.data.how.heading | escape | replace: 'air con', 'air&nbsp;con' | replace: 'Air con', 'Air&nbsp;con' }}</h2>
     <p class="how-intro">{{ site.data.how.intro | escape }}</p>
     <ol class="steps">
       {%- for s in site.data.how.steps %}
@@ -293,7 +320,7 @@
 <section class="accred" id="accreditations">
   <div class="wrap accred-row">
     <div class="accred-copy">
-      <h2 class="h2">{{ site.data.accreditations.heading | escape }}</h2>
+      <h2 class="h2">{{ site.data.accreditations.heading | escape | replace: 'air con', 'air&nbsp;con' | replace: 'Air con', 'Air&nbsp;con' }}</h2>
       <p>{{ site.data.accreditations.text | escape }}</p>
       <p class="muted small">Registration details are set out in our <a href="terms.html#registrations">terms and conditions</a>.</p>
     </div>
@@ -307,7 +334,7 @@
 
 <section class="area">
   <div class="wrap area-row">
-    <h2 class="h2">{{ site.data.contact.area_heading | escape }}</h2>
+    <h2 class="h2">{{ site.data.contact.area_heading | escape | replace: 'air con', 'air&nbsp;con' | replace: 'Air con', 'Air&nbsp;con' }}</h2>
     <p>{{ site.data.contact.area_text | escape }}</p>
   </div>
 </section>
@@ -315,7 +342,7 @@
 <section class="quote" id="quote">
   <div class="wrap quote-grid">
     <div class="quote-copy">
-      <h2 class="h2">{{ site.data.contact.quote_heading | escape }}</h2>
+      <h2 class="h2">{{ site.data.contact.quote_heading | escape | replace: 'air con', 'air&nbsp;con' | replace: 'Air con', 'Air&nbsp;con' }}</h2>
       <p>{{ site.data.contact.quote_text | escape }}</p>
       {% if site.data.contact.phone and site.data.contact.phone != "" %}<p class="contact-line">Call <a href="tel:{{ site.data.contact.phone | replace: ' ', '' }}">{{ site.data.contact.phone }}</a></p>
       {% endif %}<p class="contact-line">Email <a href="mailto:{{ site.data.contact.email }}">{{ site.data.contact.email }}</a></p>
@@ -372,6 +399,19 @@
     </div>
   </div>
 </footer>
+
+{%- if site.data.offer.enabled %}
+<div class="offer" id="offer" role="dialog" aria-modal="true" aria-labelledby="offer-title" hidden data-delay="{{ site.data.offer.delay_seconds | default: 6 }}" data-code="{{ site.data.offer.code | upcase }}">
+  <div class="offer-box">
+    <button type="button" class="offer-close" id="offer-close" aria-label="Close">×</button>
+    <p class="offer-code-badge">Code <strong>{{ site.data.offer.code | upcase }}</strong></p>
+    <h2 class="offer-title" id="offer-title">{{ site.data.offer.headline | escape | replace: 'air con', 'air&nbsp;con' | replace: 'Air con', 'Air&nbsp;con' }}</h2>
+    <p>{{ site.data.offer.text | escape }}</p>
+    <button type="button" class="btn btn-full" id="offer-go">{{ site.data.offer.button | escape }}</button>
+    <p class="offer-small">{{ site.data.offer.small_print | escape }}</p>
+  </div>
+</div>
+{%- endif %}
 
 <script src="assets/js/main.js" defer></script>
 <script src="assets/js/ac-prices.js" defer></script>

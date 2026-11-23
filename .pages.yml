@@ -37,6 +37,10 @@ content:
   - name: footer_text
     label: Footer services line
     type: text
+  - name: payment_link
+    label: Deposit payment link
+    type: string
+    description: Optional. A PayPal.me link (e.g. https://paypal.me/yourname) gets the deposit amount added automatically. Leave blank to send payment links by email.
 - name: hero
   label: Top of page
   type: file
@@ -497,6 +501,17 @@ content:
     label: Pipe run lengths
     type: object
     fields:
+    - name: backtoback
+      label: Back to back
+      type: object
+      fields:
+      - name: label
+        label: Name shown
+        type: string
+      - name: add
+        label: Extra cost (£)
+        type: number
+        description: Use a minus number for a saving, e.g. -100
     - name: short
       label: Short
       type: object
@@ -628,6 +643,41 @@ content:
     options:
       min: 0
       max: 1
+- name: offer
+  label: Discount pop-up
+  type: file
+  path: _data/offer.yml
+  format: yaml
+  fields:
+  - name: enabled
+    label: Show the pop-up and accept the code
+    type: boolean
+  - name: code
+    label: Discount code
+    type: string
+  - name: percent
+    label: Discount (%)
+    type: number
+    options:
+      min: 0
+      max: 100
+  - name: headline
+    label: Headline
+    type: string
+  - name: text
+    label: Text
+    type: text
+  - name: button
+    label: Button text
+    type: string
+  - name: small_print
+    label: Small print
+    type: text
+  - name: delay_seconds
+    label: Seconds before it appears
+    type: number
+    options:
+      min: 0
 - name: services
   label: Other services
   type: file

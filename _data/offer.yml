@@ -1,0 +1,8 @@
+enabled: true
+code: AC20
+percent: 20
+headline: 20% off your first air con install
+text: Use code AC20 when you work out your price, then book your install day and pay a deposit online.
+button: Get my price with 20% off
+small_print: One code per household, for a first air con installation only. Discount applies to the installed price. Cannot be combined with other offers.
+delay_seconds: 6

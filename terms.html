@@ -58,6 +58,11 @@
     <p>For larger jobs we may ask for a deposit to secure your start date and order materials. The amount and stage payments will be set out in your quote. The final balance is due on completion, once you have had the chance to look over the work with us. We accept bank transfer.</p>
     <p>Certificates for electrical and air conditioning work are released once the job is paid for in full.</p>
 
+    <p>Air conditioning installs booked online need a deposit of {{ site.data.ac_prices.depositPercent }}% of the installed price shown by our price calculator to secure your date. The price is confirmed at a free survey before any work starts; if the survey changes the price, you can cancel and have your deposit refunded in full. The balance is due once the installation is finished.</p>
+    {%- if site.data.offer.enabled %}
+    <p>Discount code {{ site.data.offer.code | upcase }} gives {{ site.data.offer.percent }}% off the installed price of a first air conditioning installation. One code per household. It cannot be combined with other offers and has no cash value.</p>
+    {%- endif %}
+
     <h2>5. Changes to the work</h2>
     <p>If you would like to change or add to the work once it has started, we will agree the cost and any effect on the finish date with you, in writing (a text or email is fine), before doing it.</p>
 

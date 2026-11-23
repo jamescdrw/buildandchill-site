@@ -33,6 +33,9 @@ houses:
     label: Bungalow
     factor: 1.06
 runs:
+  backtoback:
+    label: Back to back (same wall, cheapest)
+    add: -100
   short:
     label: Under 5m
     add: 0
