@@ -187,12 +187,66 @@
         <li>Installed under REFCOM F-Gas registration, commissioned and tested</li>
         <li>Servicing, cleaning and repairs on existing systems</li>
       </ul>
-      <a class="btn" href="#quote">Get an air con quote</a>
+      <a class="btn" href="#ac-price">Work out your price</a>
     </div>
     <div class="duo">
       <picture><source srcset="assets/img/aircon.webp" type="image/webp"><img src="assets/img/aircon.jpg" alt="White wall-mounted air conditioning unit in a modern living room" loading="lazy" width="1216" height="832"></picture>
       <picture><source srcset="assets/img/aircon-outdoor.webp" type="image/webp"><img src="assets/img/aircon-outdoor.jpg" alt="Fujitsu air conditioning outdoor unit installed beside a red brick house" loading="lazy" width="1712" height="1152" style="object-position: 38% 70%"></picture>
     </div>
+  </div>
+</section>
+
+<section class="calc" id="ac-price">
+  <div class="wrap calc-grid">
+    <div class="calc-intro">
+      <h2 class="h2">Work out your air con price</h2>
+      <p>Answer a few questions for an instant installed price, including supply, fitting, F-Gas commissioning and standard electrical connection. We confirm the exact unit size on a free survey.</p>
+      <p class="muted small">Prices start from £1,495 fitted. Leicestershire and East Midlands postcodes get a local discount.</p>
+    </div>
+    <form class="calc-form" id="ac-calc" novalidate>
+      <fieldset class="calc-units">
+        <legend>How many rooms need air con?</legend>
+        <input type="hidden" name="units" value="1">
+        <div class="unit-btns">
+          <button type="button" data-units="1" aria-pressed="true">1</button>
+          <button type="button" data-units="2" aria-pressed="false">2</button>
+          <button type="button" data-units="3" aria-pressed="false">3</button>
+          <button type="button" data-units="4" aria-pressed="false">4</button>
+          <button type="button" data-units="5" aria-pressed="false">5</button>
+        </div>
+      </fieldset>
+      <div class="calc-row">
+        <div class="field"><label for="ac-room">Size of the main room</label><select id="ac-room" name="room"></select></div>
+        <div class="field"><label for="ac-house">Type of property</label><select id="ac-house" name="house"></select></div>
+      </div>
+      <details class="measure">
+        <summary>Not sure of the room size? Measure it</summary>
+        <div class="calc-row three">
+          <div class="field"><label for="ac-len">Length (m)</label><input id="ac-len" type="number" min="0" step="0.1" inputmode="decimal"></div>
+          <div class="field"><label for="ac-wid">Width (m)</label><input id="ac-wid" type="number" min="0" step="0.1" inputmode="decimal"></div>
+          <div class="field"><label for="ac-ceiling">Ceiling</label><select id="ac-ceiling"><option value="standard">Standard</option><option value="high">High</option><option value="vaulted">Vaulted</option></select></div>
+        </div>
+        <button type="button" class="btn btn-small btn-outline" id="ac-measure-btn">Set room size</button>
+        <p class="measure-note" id="ac-measure-note" aria-live="polite"></p>
+      </details>
+      <div class="calc-row">
+        <div class="field"><label for="ac-run">Pipe run to outdoor unit</label><select id="ac-run" name="run"></select></div>
+        <div class="field"><label for="ac-brand">Brand</label><select id="ac-brand" name="brand"></select></div>
+      </div>
+      <div class="calc-row">
+        <div class="field"><label for="ac-range">Kit range</label><select id="ac-range" name="range"></select></div>
+        <div class="field"><label for="ac-postcode">Postcode</label><input id="ac-postcode" name="postcode" autocomplete="postal-code" placeholder="LE4"></div>
+      </div>
+      <button class="btn btn-full" type="submit">Show my price</button>
+      <div class="calc-result" id="ac-result" tabindex="-1" hidden>
+        <p class="calc-total-label">Your installed price</p>
+        <p class="calc-total" id="ac-total"></p>
+        <p class="calc-system" id="ac-system"></p>
+        <table class="calc-table"><tbody id="ac-rows"></tbody></table>
+        <p class="muted small">Guide price. We confirm it after a free survey, before any work starts.</p>
+        <button type="button" class="btn btn-full" id="ac-send">Send this price with my enquiry</button>
+      </div>
+    </form>
   </div>
 </section>
 
@@ -337,5 +391,7 @@
 </footer>
 
 <script src="assets/js/main.js" defer></script>
+<script src="assets/js/ac-prices.js" defer></script>
+<script src="assets/js/ac-calculator.js" defer></script>
 </body>
 </html>
