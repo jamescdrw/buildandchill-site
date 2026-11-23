@@ -1,0 +1,23 @@
+heading: Extensions, with the hard part done for you
+paragraphs:
+- Single and double storey extensions, kitchen-diners, wraparounds and garage conversions. Most people put off extending because of the paperwork, not the building. We handle all of it, so you deal with one person from first sketch to final sign-off.
+steps:
+- title: Drawings
+  text: Measured survey and architectural drawings of your home and the new space.
+- title: Planning
+  text: We check whether you need planning permission or can build under permitted development, and submit the application to the council for you.
+- title: Building control
+  text: Building Regulations approval, inspections at every stage, and the completion certificate at the end.
+- title: The build
+  text: Foundations, brickwork, roof, windows, plastering, electrics and plumbing, then your new kitchen or bathroom fitted to finish.
+button: Talk about your extension
+photos:
+- image: /assets/img/ext-interior.jpg
+  alt: Bright kitchen-diner extension with a roof lantern and sliding doors
+  position: ''
+- image: /assets/img/extension.jpg
+  alt: Brick rear extension with bifold doors and roof lantern
+  position: ''
+- image: /assets/img/ext-build.jpg
+  alt: Rear extension with glazed roof and sliding doors onto a patio
+  position: ''

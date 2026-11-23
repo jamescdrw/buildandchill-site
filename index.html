@@ -1,3 +1,5 @@
+---
+---
 <!doctype html>
 <html lang="en-GB">
 <head>
@@ -13,22 +15,23 @@
 <meta property="og:title" content="Build &amp; Chill Property Services, Leicester">
 <meta property="og:description" content="Kitchens, bathrooms, extensions, commercial ceilings and air conditioning. One team for all the trades, from the first measure to the final clean.">
 <meta property="og:url" content="https://buildandchill.co.uk/">
-<meta property="og:image" content="https://buildandchill.co.uk/assets/img/hero-kitchen.jpg">
+<meta property="og:image" content="https://buildandchill.co.uk{{ site.data.hero.image }}">
 <meta property="og:locale" content="en_GB">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,400..900;1,62..125,400..900&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/styles.css">
-<link rel="preload" as="image" href="assets/img/hero-kitchen.webp" type="image/webp">
+
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "HomeAndConstructionBusiness",
   "name": "Build & Chill Property Services",
   "url": "https://buildandchill.co.uk/",
-  "image": "https://buildandchill.co.uk/assets/img/hero-kitchen.jpg",
+  "image": "https://buildandchill.co.uk{{ site.data.hero.image }}",
   "logo": "https://buildandchill.co.uk/assets/img/icon-512.png",
-  "email": "Threadroll@hotmail.com",
+  "email": "{{ site.data.contact.email }}",{% if site.data.contact.phone and site.data.contact.phone != "" %}
+  "telephone": "{{ site.data.contact.phone }}",{% endif %}
   "founder": "Ashley Finlay-Thurman",
   "slogan": "20 years in the trade",
   "address": {"@type": "PostalAddress", "addressLocality": "Birstall", "addressRegion": "Leicestershire", "postalCode": "LE4", "addressCountry": "GB"},
@@ -70,13 +73,10 @@
 <main id="main">
 
 <section class="hero" id="top">
-  <picture class="hero-img">
-    <source srcset="assets/img/hero-kitchen.webp" type="image/webp">
-    <img src="assets/img/hero-kitchen.jpg" alt="Navy shaker kitchen with white quartz island and brass pendant lights" width="1536" height="864" fetchpriority="high">
-  </picture>
+  {% include pic.html src=site.data.hero.image alt=site.data.hero.alt class="hero-img" eager=true %}
   <div class="wrap hero-inner">
-    <h1 class="display">Your kitchen, fitted start to finish.</h1>
-    <p class="lede">20 years in the trade. Howdens kitchens and bathrooms, commercial ceilings and air conditioning across Leicester and Leicestershire. One team for all the trades, from the first measure to the final clean.</p>
+    <h1 class="display">{{ site.data.hero.headline | escape }}</h1>
+    <p class="lede">{{ site.data.hero.intro | escape }}</p>
     <div class="hero-actions">
       <a class="btn" href="#quote">Book a free survey</a>
       <a class="btn btn-ghost" href="#kitchens">See what we fit</a>
@@ -88,33 +88,32 @@
 
 <section class="strip" aria-label="What we cover">
   <div class="wrap strip-row">
-    <p><strong>20 years</strong> in the trade</p>
-    <p><strong>Howdens</strong> kitchens &amp; bathrooms fitted</p>
-    <p><strong>Commercial</strong> suspended ceilings</p>
-    <p><a href="#aircon"><strong>Air con</strong> Samsung, Fujitsu, Panasonic &amp; Daikin</a></p>
-    <p><a href="#extensions"><strong>Extensions</strong> planning &amp; drawings done for you</a></p>
+    {%- for s in site.data.hero.strip %}
+    <p>{% if s.link and s.link != "" %}<a href="{{ s.link }}">{% endif %}<strong>{{ s.bold | escape }}</strong> {{ s.text | escape }}{% if s.link and s.link != "" %}</a>{% endif %}</p>
+    {%- endfor %}
   </div>
 </section>
 
 <section class="feature" id="kitchens">
   <div class="wrap feature-grid">
     <div class="feature-copy">
-      <h2 class="h2">Howdens kitchens, fitted properly</h2>
-      <p>Howdens make some of the best-value kitchens in the country. We fit them the way they deserve: level carcasses, tight scribes, clean worktop joints and doors that line up on day one and stay that way.</p>
-      <p>You pick your kitchen at your local Howdens depot, or we help you choose it. We handle everything else.</p>
+      <h2 class="h2">{{ site.data.kitchens.heading | escape }}</h2>
+      {%- for t in site.data.kitchens.paragraphs %}
+      <p>{{ t | escape }}</p>
+      {%- endfor %}
       <ul class="ticks">
-        <li>Strip-out of the old kitchen and removal from site</li>
-        <li>Plumbing, electrics, plastering and tiling</li>
-        <li>Laminate, solid wood and quartz worktops</li>
-        <li>Integrated appliances connected and tested</li>
-        <li>Flooring, skirting and decorating to finish</li>
+        {%- for t in site.data.kitchens.ticks %}
+        <li>{{ t | escape }}</li>
+        {%- endfor %}
       </ul>
-      <a class="btn" href="#quote">Talk about your kitchen</a>
+      <a class="btn" href="#quote">{{ site.data.kitchens.button | escape }}</a>
     </div>
     <div class="mosaic">
-      <picture class="m-a"><source srcset="assets/img/kitchen-2.webp" type="image/webp"><img src="assets/img/kitchen-2.jpg" alt="Sage green handleless kitchen with oak worktops and Belfast sink" loading="lazy" width="1216" height="832"></picture>
-      <picture class="m-b"><source srcset="assets/img/kitchen-3.webp" type="image/webp"><img src="assets/img/kitchen-3.jpg" alt="Grey shaker kitchen with marble-effect quartz and herringbone floor" loading="lazy" width="1216" height="832"></picture>
-      <picture class="m-c"><source srcset="assets/img/utility.webp" type="image/webp"><img src="assets/img/utility.jpg" alt="Navy shaker utility room with integrated washer and dryer" loading="lazy" width="1216" height="832"></picture>
+      {%- assign cls = "m-a,m-b,m-c" | split: "," -%}
+      {%- for ph in site.data.kitchens.photos limit:3 %}
+      {%- assign c = cls[forloop.index0] %}
+      {% include pic.html src=ph.image alt=ph.alt position=ph.position class=c %}
+      {%- endfor %}
     </div>
   </div>
 </section>
@@ -122,76 +121,64 @@
 <section class="feature feature-alt" id="bathrooms">
   <div class="wrap feature-grid flip">
     <div class="feature-copy">
-      <h2 class="h2">Bathrooms and en-suites</h2>
-      <p>From a straight swap to a full re-plan with a walk-in shower, we take the room back to the walls and rebuild it. Waterproofing goes in before a single tile does, because that's the part you never see and the part that matters most.</p>
+      <h2 class="h2">{{ site.data.bathrooms.heading | escape }}</h2>
+      {%- for t in site.data.bathrooms.paragraphs %}
+      <p>{{ t | escape }}</p>
+      {%- endfor %}
       <ul class="ticks">
-        <li>Howdens bathroom furniture and sanitaryware</li>
-        <li>Walk-in showers, wet rooms and tanking</li>
-        <li>Wall and floor tiling, large format included</li>
-        <li>Heated towel rails, LED mirrors and extractor fans</li>
+        {%- for t in site.data.bathrooms.ticks %}
+        <li>{{ t | escape }}</li>
+        {%- endfor %}
       </ul>
-      <a class="btn" href="#quote">Plan your bathroom</a>
+      <a class="btn" href="#quote">{{ site.data.bathrooms.button | escape }}</a>
     </div>
     <div class="duo">
-      <picture><source srcset="assets/img/bathroom.webp" type="image/webp"><img src="assets/img/bathroom.jpg" alt="Grey tiled bathroom with frameless walk-in shower and oak vanity" loading="lazy" width="1216" height="832"></picture>
-      <picture><source srcset="assets/img/bathroom-2.webp" type="image/webp"><img src="assets/img/bathroom-2.jpg" alt="Green tiled bathroom with roll-top bath and brass fittings" loading="lazy" width="997" height="832"></picture>
+      {%- for ph in site.data.bathrooms.photos limit:2 %}
+      {% include pic.html src=ph.image alt=ph.alt position=ph.position %}
+      {%- endfor %}
     </div>
   </div>
 </section>
 
 <section class="ceilings" id="ceilings">
-  <picture class="ceilings-bg">
-    <source srcset="assets/img/ceiling.webp" type="image/webp">
-    <img src="assets/img/ceiling.jpg" alt="" loading="lazy" width="1216" height="832">
-  </picture>
+  {% include pic.html src=site.data.ceilings.image alt="" class="ceilings-bg" %}
   <div class="wrap ceilings-inner">
-    <h2 class="h2">Commercial ceilings, fixed and fitted</h2>
-    <p class="lede">Offices, shops, schools, warehouses and units. We install new suspended ceilings and repair the ones you already have, with minimal disruption to the people working underneath.</p>
+    <h2 class="h2">{{ site.data.ceilings.heading | escape }}</h2>
+    <p class="lede">{{ site.data.ceilings.intro | escape }}</p>
     <div class="ceil-cols">
+      {%- for col in site.data.ceilings.columns %}
       <div>
-        <h3>New installs</h3>
-        <p>Suspended grid systems, mineral fibre and plasterboard tiles, MF ceilings and bulkheads, with LED panels set in.</p>
+        <h3>{{ col.title | escape }}</h3>
+        <p>{{ col.text | escape }}</p>
       </div>
-      <div>
-        <h3>Repairs and replacements</h3>
-        <p>Water-stained or sagging tiles swapped, damaged grid straightened or replaced, and access hatches added for services.</p>
-      </div>
-      <div>
-        <h3>Out of hours</h3>
-        <p>Evening and weekend working, so your premises can stay open while the work gets done.</p>
-      </div>
+      {%- endfor %}
     </div>
-    <a class="btn btn-light" href="#quote">Request a site visit</a>
+    <a class="btn btn-light" href="#quote">{{ site.data.ceilings.button | escape }}</a>
   </div>
 </section>
 
 <section class="feature" id="aircon">
   <div class="wrap feature-grid">
     <div class="feature-copy">
-      <h2 class="h2">Air conditioning, supplied and installed</h2>
-      <p>We fit quality units at the best prices. Wall-mounted split systems that cool in summer and heat efficiently in winter, from the manufacturers that last. We survey the room, recommend the right size of unit, and fit it with tidy pipe runs, so it doesn't look like an afterthought.</p>
+      <h2 class="h2">{{ site.data.aircon.heading | escape }}</h2>
+      {%- for t in site.data.aircon.paragraphs %}
+      <p>{{ t | escape }}</p>
+      {%- endfor %}
       <div class="brands">
         <p class="brands-label">Brands we supply and fit</p>
-        <ul>
-          <li>Samsung</li>
-          <li>Fujitsu</li>
-          <li>Panasonic</li>
-          <li>Daikin</li>
-        </ul>
+        <ul>{% for b in site.data.aircon.brands %}<li>{{ b | escape }}</li>{% endfor %}</ul>
       </div>
       <ul class="ticks">
-        <li>Homes: bedrooms, living rooms, home offices and garden rooms</li>
-        <li>Businesses: offices, shops, salons and server rooms</li>
-        <li>Single rooms or multi-split systems running several rooms from one outdoor unit</li>
-        <li>Indoor and outdoor units mounted, pipework run in neat trunking</li>
-        <li>Installed under REFCOM F-Gas registration, commissioned and tested</li>
-        <li>Servicing, cleaning and repairs on existing systems</li>
+        {%- for t in site.data.aircon.ticks %}
+        <li>{{ t | escape }}</li>
+        {%- endfor %}
       </ul>
-      <a class="btn" href="#ac-price">Work out your price</a>
+      <a class="btn" href="#ac-price">{{ site.data.aircon.button | escape }}</a>
     </div>
     <div class="duo">
-      <picture><source srcset="assets/img/aircon.webp" type="image/webp"><img src="assets/img/aircon.jpg" alt="White wall-mounted air conditioning unit in a modern living room" loading="lazy" width="1216" height="832"></picture>
-      <picture><source srcset="assets/img/aircon-outdoor.webp" type="image/webp"><img src="assets/img/aircon-outdoor.jpg" alt="Fujitsu air conditioning outdoor unit installed beside a red brick house" loading="lazy" width="1712" height="1152" style="object-position: 38% 70%"></picture>
+      {%- for ph in site.data.aircon.photos limit:2 %}
+      {% include pic.html src=ph.image alt=ph.alt position=ph.position %}
+      {%- endfor %}
     </div>
   </div>
 </section>
@@ -199,9 +186,9 @@
 <section class="calc" id="ac-price">
   <div class="wrap calc-grid">
     <div class="calc-intro">
-      <h2 class="h2">Work out your air con price</h2>
-      <p>Answer a few questions for an instant installed price, including supply, fitting, F-Gas commissioning and standard electrical connection. We confirm the exact unit size on a free survey.</p>
-      <p class="muted small">Prices start from £1,495 fitted. Leicestershire and East Midlands postcodes get a local discount.</p>
+      <h2 class="h2">{{ site.data.aircon.calc_heading | escape }}</h2>
+      <p>{{ site.data.aircon.calc_intro | escape }}</p>
+      <p class="muted small">{{ site.data.aircon.calc_note | escape }}</p>
     </div>
     <form class="calc-form" id="ac-calc" novalidate>
       <fieldset class="calc-units">
@@ -253,57 +240,52 @@
 <section class="feature feature-alt" id="extensions">
   <div class="wrap feature-grid flip">
     <div class="feature-copy">
-      <h2 class="h2">Extensions, with the hard part done for you</h2>
-      <p>Single and double storey extensions, kitchen-diners, wraparounds and garage conversions. Most people put off extending because of the paperwork, not the building. We handle all of it, so you deal with one person from first sketch to final sign-off.</p>
+      <h2 class="h2">{{ site.data.extensions.heading | escape }}</h2>
+      {%- for t in site.data.extensions.paragraphs %}
+      <p>{{ t | escape }}</p>
+      {%- endfor %}
       <ol class="paperwork">
-        <li><h3>Drawings</h3><p>Measured survey and architectural drawings of your home and the new space.</p></li>
-        <li><h3>Planning</h3><p>We check whether you need planning permission or can build under permitted development, and submit the application to the council for you.</p></li>
-        <li><h3>Building control</h3><p>Building Regulations approval, inspections at every stage, and the completion certificate at the end.</p></li>
-        <li><h3>The build</h3><p>Foundations, brickwork, roof, windows, plastering, electrics and plumbing, then your new kitchen or bathroom fitted to finish.</p></li>
+        {%- for s in site.data.extensions.steps %}
+        <li><h3>{{ s.title | escape }}</h3><p>{{ s.text | escape }}</p></li>
+        {%- endfor %}
       </ol>
-      <a class="btn" href="#quote">Talk about your extension</a>
+      <a class="btn" href="#quote">{{ site.data.extensions.button | escape }}</a>
     </div>
     <div class="mosaic">
-      <picture class="m-a"><source srcset="assets/img/ext-interior.webp" type="image/webp"><img src="assets/img/ext-interior.jpg" alt="Bright kitchen-diner extension with a roof lantern and sliding doors" loading="lazy" width="1216" height="832"></picture>
-      <picture class="m-b"><source srcset="assets/img/extension.webp" type="image/webp"><img src="assets/img/extension.jpg" alt="Brick rear extension with bifold doors and roof lantern" loading="lazy" width="1216" height="832"></picture>
-      <picture class="m-c"><source srcset="assets/img/ext-build.webp" type="image/webp"><img src="assets/img/ext-build.jpg" alt="Rear extension with glazed roof and sliding doors onto a patio" loading="lazy" width="1216" height="832"></picture>
+      {%- assign cls = "m-a,m-b,m-c" | split: "," -%}
+      {%- for ph in site.data.extensions.photos limit:3 %}
+      {%- assign c = cls[forloop.index0] %}
+      {% include pic.html src=ph.image alt=ph.alt position=ph.position class=c %}
+      {%- endfor %}
     </div>
   </div>
 </section>
 
 <section class="services" id="services">
   <div class="wrap">
-    <h2 class="h2">Everything else your property needs</h2>
-    <div class="svc-list svc-two">
+    <h2 class="h2">{{ site.data.services.heading | escape }}</h2>
+    <div class="svc-list{% if site.data.services.cards.size == 2 %} svc-two{% endif %}">
+      {%- for card in site.data.services.cards %}
       <article class="svc">
-        <picture><source srcset="assets/img/maint-hall.webp" type="image/webp"><img src="assets/img/maint-hall.jpg" alt="Freshly plastered and decorated hallway with new oak doors" loading="lazy" width="1216" height="832"></picture>
+        {% include pic.html src=card.image alt=card.alt %}
         <div>
-          <h3>Building work and alterations</h3>
-          <p>Knock-throughs and steel beams, stud walls, plastering, porches, patios and garage conversions. Small jobs and large ones, managed the same way.</p>
+          <h3>{{ card.title | escape }}</h3>
+          <p>{{ card.text | escape }}</p>
         </div>
       </article>
-      <article class="svc">
-        <picture><source srcset="assets/img/maint-door.webp" type="image/webp"><img src="assets/img/maint-door.jpg" alt="Restored front door with brass fittings on an Edwardian red brick house" loading="lazy" width="1216" height="832"></picture>
-        <div>
-          <h3>Repairs and maintenance</h3>
-          <p>For homeowners, landlords and businesses. Doors, leaks, damaged walls, fixtures and the list of jobs that keeps getting longer.</p>
-        </div>
-      </article>
+      {%- endfor %}
     </div>
   </div>
 </section>
 
 <section class="how" id="how">
   <div class="wrap">
-    <h2 class="h2">How a job runs</h2>
-    <p class="how-intro">One team for all the trades: building, plumbing, electrics, plastering, tiling and decorating. One point of contact from the first visit to the last.</p>
+    <h2 class="h2">{{ site.data.how.heading | escape }}</h2>
+    <p class="how-intro">{{ site.data.how.intro | escape }}</p>
     <ol class="steps">
-      <li><h3>Survey</h3><p>We visit, measure up and listen to what you want from the room.</p></li>
-      <li><h3>Design and price</h3><p>A clear written quote. If it's a Howdens kitchen, we help you finalise the plan with your depot.</p></li>
-      <li><h3>Strip-out</h3><p>Old units, suites and tiles removed and taken away. Floors and furniture protected.</p></li>
-      <li><h3>First fix</h3><p>Plumbing, electrics, walls and floors put right before anything new goes in.</p></li>
-      <li><h3>Fit</h3><p>Units, worktops, sanitaryware, tiling and appliances installed and connected.</p></li>
-      <li><h3>Finish and handover</h3><p>Sealant, skirting, decorating and a proper clean. We walk you round it before we leave.</p></li>
+      {%- for s in site.data.how.steps %}
+      <li><h3>{{ s.title | escape }}</h3><p>{{ s.text | escape }}</p></li>
+      {%- endfor %}
     </ol>
   </div>
 </section>
@@ -311,8 +293,8 @@
 <section class="accred" id="accreditations">
   <div class="wrap accred-row">
     <div class="accred-copy">
-      <h2 class="h2">20 years in the trade, qualified and registered</h2>
-      <p>Electrical work is carried out under NAPIT registration and air conditioning under REFCOM F-Gas registration. Our team is City &amp; Guilds trained, with 20 years in the trade behind every job. Certificates are issued for every notifiable electrical job and every air con install.</p>
+      <h2 class="h2">{{ site.data.accreditations.heading | escape }}</h2>
+      <p>{{ site.data.accreditations.text | escape }}</p>
       <p class="muted small">Registration details are set out in our <a href="terms.html#registrations">terms and conditions</a>.</p>
     </div>
     <ul class="badges">
@@ -325,20 +307,21 @@
 
 <section class="area">
   <div class="wrap area-row">
-    <h2 class="h2">Based in Birstall, working across Leicestershire for 20 years</h2>
-    <p>Leicester, Birstall, Thurmaston, Syston, Rothley, Anstey, Glenfield, Loughborough, Oadby, Wigston, Melton Mowbray and nearby. Further afield for commercial work.</p>
+    <h2 class="h2">{{ site.data.contact.area_heading | escape }}</h2>
+    <p>{{ site.data.contact.area_text | escape }}</p>
   </div>
 </section>
 
 <section class="quote" id="quote">
   <div class="wrap quote-grid">
     <div class="quote-copy">
-      <h2 class="h2">Get a free quote</h2>
-      <p>Tell us a bit about the job and we'll get back to you to arrange a visit. Photos help, so feel free to attach a few when your email opens.</p>
-      <p class="contact-line">Email <a href="mailto:Threadroll@hotmail.com">Threadroll@hotmail.com</a></p>
-      <p class="contact-line muted">Ashley Finlay-Thurman, Build &amp; Chill Property Services, Birstall, Leicester</p>
+      <h2 class="h2">{{ site.data.contact.quote_heading | escape }}</h2>
+      <p>{{ site.data.contact.quote_text | escape }}</p>
+      {% if site.data.contact.phone and site.data.contact.phone != "" %}<p class="contact-line">Call <a href="tel:{{ site.data.contact.phone | replace: ' ', '' }}">{{ site.data.contact.phone }}</a></p>
+      {% endif %}<p class="contact-line">Email <a href="mailto:{{ site.data.contact.email }}">{{ site.data.contact.email }}</a></p>
+      <p class="contact-line muted">{{ site.data.contact.name_line | escape }}</p>
     </div>
-    <form class="quote-form" id="quote-form" novalidate>
+    <form class="quote-form" id="quote-form" data-email="{{ site.data.contact.email }}" novalidate>
       <div class="field">
         <label for="f-name">Your name</label>
         <input id="f-name" name="name" autocomplete="name" required>
@@ -383,7 +366,7 @@
   <div class="wrap footer-row">
     <img src="assets/img/logo.png" alt="Build &amp; Chill Property Services" width="640" height="437" loading="lazy" class="footer-logo">
     <div>
-      <p>Kitchens and bathrooms, extensions, commercial ceilings, air conditioning installation, building work, repairs and maintenance.</p>
+      <p>{{ site.data.contact.footer_text | escape }}</p>
       <p class="muted">Build &amp; Chill Property Services, Birstall, Leicester. Howdens is a trademark of Howden Joinery Ltd; we fit their products and are not part of Howdens.</p>
       <p class="muted">© <span id="yr">2026</span> Build &amp; Chill Property Services | <a href="terms.html">Terms and conditions</a></p>
     </div>

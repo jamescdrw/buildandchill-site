@@ -287,3 +287,7 @@ p { margin: 0 0 1em; max-width: 62ch; }
 .calc-result .btn { margin-top: 6px; }
 @media (max-width: 960px) { .calc-grid { grid-template-columns: 1fr; } }
 @media (max-width: 600px) { .calc-row { flex-direction: column; gap: 0; } .calc-row.three { flex-direction: row; gap: 10px; } }
+
+/* Strip: bold title on its own line, never wrapping */
+.strip strong { display: block; white-space: nowrap; font-size: 1.08rem; }
+.nav a { white-space: nowrap; }

@@ -1,0 +1,697 @@
+media:
+  input: assets/img
+  output: /assets/img
+  rename: safe
+  categories:
+  - image
+content:
+- name: contact
+  label: Contact details & footer
+  type: file
+  path: _data/contact.yml
+  format: yaml
+  fields:
+  - name: email
+    label: Email for enquiries
+    type: string
+    required: true
+  - name: phone
+    label: Phone number
+    type: string
+    description: Leave blank to hide
+  - name: name_line
+    label: Name and location line
+    type: string
+  - name: quote_heading
+    label: Quote section heading
+    type: string
+  - name: quote_text
+    label: Quote section text
+    type: text
+  - name: area_heading
+    label: Area heading
+    type: string
+  - name: area_text
+    label: Areas covered
+    type: text
+  - name: footer_text
+    label: Footer services line
+    type: text
+- name: hero
+  label: Top of page
+  type: file
+  path: _data/hero.yml
+  format: yaml
+  fields:
+  - name: headline
+    label: Big headline
+    type: string
+  - name: intro
+    label: Intro text
+    type: text
+  - name: image
+    label: Main photo
+    type: image
+  - name: alt
+    label: Describe the main photo
+    type: string
+  - name: strip
+    label: Blue strip under the photo
+    type: object
+    fields:
+    - name: bold
+      label: Bold words
+      type: string
+    - name: text
+      label: Rest of the line
+      type: string
+    - name: link
+      label: Link (optional)
+      type: string
+      description: 'e.g. #aircon or #extensions'
+    list:
+      collapsible:
+        collapsed: true
+        summary: '{bold}'
+- name: kitchens
+  label: Kitchens
+  type: file
+  path: _data/kitchens.yml
+  format: yaml
+  fields:
+  - name: heading
+    label: Heading
+    type: string
+  - &id001
+    name: paragraphs
+    label: Paragraphs
+    type: text
+    list: true
+  - &id002
+    name: ticks
+    label: Tick list
+    type: string
+    list: true
+  - name: button
+    label: Button text
+    type: string
+  - name: photos
+    label: Photos
+    type: object
+    fields:
+    - name: image
+      label: Photo
+      type: image
+    - name: alt
+      label: Describe the photo (for Google and screen readers)
+      type: string
+    - name: position
+      label: Photo crop focus (optional)
+      type: string
+      description: Leave blank. Use e.g. "40% 70%" to move the crop towards part of the photo.
+    list:
+      min: 1
+      max: 3
+      collapsible:
+        collapsed: true
+        summary: '{alt}'
+- name: bathrooms
+  label: Bathrooms
+  type: file
+  path: _data/bathrooms.yml
+  format: yaml
+  fields:
+  - name: heading
+    label: Heading
+    type: string
+  - *id001
+  - *id002
+  - name: button
+    label: Button text
+    type: string
+  - name: photos
+    label: Photos
+    type: object
+    fields:
+    - name: image
+      label: Photo
+      type: image
+    - name: alt
+      label: Describe the photo (for Google and screen readers)
+      type: string
+    - name: position
+      label: Photo crop focus (optional)
+      type: string
+      description: Leave blank. Use e.g. "40% 70%" to move the crop towards part of the photo.
+    list:
+      min: 1
+      max: 2
+      collapsible:
+        collapsed: true
+        summary: '{alt}'
+- name: extensions
+  label: Extensions
+  type: file
+  path: _data/extensions.yml
+  format: yaml
+  fields:
+  - name: heading
+    label: Heading
+    type: string
+  - *id001
+  - name: steps
+    label: Numbered steps
+    type: object
+    fields:
+    - name: title
+      label: Title
+      type: string
+    - name: text
+      label: Text
+      type: text
+    list:
+      collapsible:
+        collapsed: true
+        summary: '{title}'
+  - name: button
+    label: Button text
+    type: string
+  - name: photos
+    label: Photos
+    type: object
+    fields:
+    - name: image
+      label: Photo
+      type: image
+    - name: alt
+      label: Describe the photo (for Google and screen readers)
+      type: string
+    - name: position
+      label: Photo crop focus (optional)
+      type: string
+      description: Leave blank. Use e.g. "40% 70%" to move the crop towards part of the photo.
+    list:
+      min: 1
+      max: 3
+      collapsible:
+        collapsed: true
+        summary: '{alt}'
+- name: ceilings
+  label: Commercial ceilings
+  type: file
+  path: _data/ceilings.yml
+  format: yaml
+  fields:
+  - name: heading
+    label: Heading
+    type: string
+  - name: intro
+    label: Intro text
+    type: text
+  - name: image
+    label: Background photo
+    type: image
+  - name: columns
+    label: Columns
+    type: object
+    fields:
+    - name: title
+      label: Title
+      type: string
+    - name: text
+      label: Text
+      type: text
+    list:
+      collapsible:
+        collapsed: true
+        summary: '{title}'
+  - name: button
+    label: Button text
+    type: string
+- name: aircon
+  label: Air con section
+  type: file
+  path: _data/aircon.yml
+  format: yaml
+  fields:
+  - name: heading
+    label: Heading
+    type: string
+  - *id001
+  - name: brands
+    label: Brands
+    type: string
+    list: true
+  - *id002
+  - name: button
+    label: Button text
+    type: string
+  - name: photos
+    label: Photos
+    type: object
+    fields:
+    - name: image
+      label: Photo
+      type: image
+    - name: alt
+      label: Describe the photo (for Google and screen readers)
+      type: string
+    - name: position
+      label: Photo crop focus (optional)
+      type: string
+      description: Leave blank. Use e.g. "40% 70%" to move the crop towards part of the photo.
+    list:
+      min: 1
+      max: 2
+      collapsible:
+        collapsed: true
+        summary: '{alt}'
+  - name: calc_heading
+    label: Price calculator heading
+    type: string
+  - name: calc_intro
+    label: Price calculator intro
+    type: text
+  - name: calc_note
+    label: Price calculator small print
+    type: text
+- name: ac_prices
+  label: Air con prices
+  type: file
+  path: _data/ac_prices.yml
+  format: yaml
+  fields:
+  - name: minPrice
+    label: Minimum installed price (£)
+    type: number
+    options:
+      min: 0
+  - name: depositPercent
+    label: Deposit (%)
+    type: number
+    options:
+      min: 0
+      max: 100
+  - name: ranges
+    label: Kit ranges
+    type: object
+    fields:
+    - name: budget
+      label: Budget
+      type: object
+      fields:
+      - name: label
+        label: Name shown
+        type: string
+      - name: firstUnit
+        label: First unit, supplied and fitted (£)
+        type: number
+        options:
+          min: 0
+      - name: extraUnit
+        label: Each extra indoor unit (£)
+        type: number
+        options:
+          min: 0
+      - name: outdoorMultiUplift
+        label: Multi-split outdoor unit uplift (£)
+        type: number
+        options:
+          min: 0
+    - name: mid
+      label: Mid-range
+      type: object
+      fields:
+      - name: label
+        label: Name shown
+        type: string
+      - name: firstUnit
+        label: First unit, supplied and fitted (£)
+        type: number
+        options:
+          min: 0
+      - name: extraUnit
+        label: Each extra indoor unit (£)
+        type: number
+        options:
+          min: 0
+      - name: outdoorMultiUplift
+        label: Multi-split outdoor unit uplift (£)
+        type: number
+        options:
+          min: 0
+    - name: premium
+      label: Premium
+      type: object
+      fields:
+      - name: label
+        label: Name shown
+        type: string
+      - name: firstUnit
+        label: First unit, supplied and fitted (£)
+        type: number
+        options:
+          min: 0
+      - name: extraUnit
+        label: Each extra indoor unit (£)
+        type: number
+        options:
+          min: 0
+      - name: outdoorMultiUplift
+        label: Multi-split outdoor unit uplift (£)
+        type: number
+        options:
+          min: 0
+  - name: rooms
+    label: Room sizes
+    type: object
+    fields:
+    - name: small
+      label: Small
+      type: object
+      fields:
+      - name: label
+        label: Name shown
+        type: string
+      - name: kw
+        label: Unit size shown
+        type: string
+      - name: factor
+        label: Price multiplier
+        type: number
+        description: 1 = no change, 1.08 = 8% more
+      - name: maxArea
+        label: Largest room for this size (m²)
+        type: number
+    - name: medium
+      label: Medium
+      type: object
+      fields:
+      - name: label
+        label: Name shown
+        type: string
+      - name: kw
+        label: Unit size shown
+        type: string
+      - name: factor
+        label: Price multiplier
+        type: number
+        description: 1 = no change, 1.08 = 8% more
+      - name: maxArea
+        label: Largest room for this size (m²)
+        type: number
+    - name: large
+      label: Large
+      type: object
+      fields:
+      - name: label
+        label: Name shown
+        type: string
+      - name: kw
+        label: Unit size shown
+        type: string
+      - name: factor
+        label: Price multiplier
+        type: number
+        description: 1 = no change, 1.08 = 8% more
+      - name: maxArea
+        label: Largest room for this size (m²)
+        type: number
+    - name: xlarge
+      label: Extra large
+      type: object
+      fields:
+      - name: label
+        label: Name shown
+        type: string
+      - name: kw
+        label: Unit size shown
+        type: string
+      - name: factor
+        label: Price multiplier
+        type: number
+        description: 1 = no change, 1.08 = 8% more
+      - name: maxArea
+        label: Largest room for this size (m²)
+        type: number
+  - name: houses
+    label: Property types
+    type: object
+    fields:
+    - name: flat
+      label: Flat
+      type: object
+      fields:
+      - name: label
+        label: Name shown
+        type: string
+      - name: factor
+        label: Price multiplier
+        type: number
+        description: 1 = no change, 1.05 = 5% more, 0.98 = 2% less
+    - name: terrace
+      label: Terraced
+      type: object
+      fields:
+      - name: label
+        label: Name shown
+        type: string
+      - name: factor
+        label: Price multiplier
+        type: number
+        description: 1 = no change, 1.05 = 5% more, 0.98 = 2% less
+    - name: semi
+      label: Semi-detached
+      type: object
+      fields:
+      - name: label
+        label: Name shown
+        type: string
+      - name: factor
+        label: Price multiplier
+        type: number
+        description: 1 = no change, 1.05 = 5% more, 0.98 = 2% less
+    - name: detached
+      label: Detached
+      type: object
+      fields:
+      - name: label
+        label: Name shown
+        type: string
+      - name: factor
+        label: Price multiplier
+        type: number
+        description: 1 = no change, 1.05 = 5% more, 0.98 = 2% less
+    - name: bungalow
+      label: Bungalow
+      type: object
+      fields:
+      - name: label
+        label: Name shown
+        type: string
+      - name: factor
+        label: Price multiplier
+        type: number
+        description: 1 = no change, 1.05 = 5% more, 0.98 = 2% less
+  - name: runs
+    label: Pipe run lengths
+    type: object
+    fields:
+    - name: short
+      label: Short
+      type: object
+      fields:
+      - name: label
+        label: Name shown
+        type: string
+      - name: add
+        label: Extra cost (£)
+        type: number
+        options:
+          min: 0
+    - name: medium
+      label: Medium
+      type: object
+      fields:
+      - name: label
+        label: Name shown
+        type: string
+      - name: add
+        label: Extra cost (£)
+        type: number
+        options:
+          min: 0
+    - name: long
+      label: Long
+      type: object
+      fields:
+      - name: label
+        label: Name shown
+        type: string
+      - name: add
+        label: Extra cost (£)
+        type: number
+        options:
+          min: 0
+    - name: extended
+      label: Extended
+      type: object
+      fields:
+      - name: label
+        label: Name shown
+        type: string
+      - name: add
+        label: Extra cost (£)
+        type: number
+        options:
+          min: 0
+  - name: brands
+    label: Brands
+    type: object
+    fields:
+    - name: either
+      label: Best price
+      type: object
+      fields:
+      - name: label
+        label: Name shown
+        type: string
+      - name: factor
+        label: Price multiplier
+        type: number
+        description: 1 = no change, 1.05 = 5% more, 0.98 = 2% less
+    - name: fujitsu
+      label: Fujitsu
+      type: object
+      fields:
+      - name: label
+        label: Name shown
+        type: string
+      - name: factor
+        label: Price multiplier
+        type: number
+        description: 1 = no change, 1.05 = 5% more, 0.98 = 2% less
+    - name: samsung
+      label: Samsung
+      type: object
+      fields:
+      - name: label
+        label: Name shown
+        type: string
+      - name: factor
+        label: Price multiplier
+        type: number
+        description: 1 = no change, 1.05 = 5% more, 0.98 = 2% less
+    - name: panasonic
+      label: Panasonic
+      type: object
+      fields:
+      - name: label
+        label: Name shown
+        type: string
+      - name: factor
+        label: Price multiplier
+        type: number
+        description: 1 = no change, 1.05 = 5% more, 0.98 = 2% less
+    - name: daikin
+      label: Daikin
+      type: object
+      fields:
+      - name: label
+        label: Name shown
+        type: string
+      - name: factor
+        label: Price multiplier
+        type: number
+        description: 1 = no change, 1.05 = 5% more, 0.98 = 2% less
+  - name: ceilings
+    label: Ceiling height multipliers
+    type: object
+    fields:
+    - name: standard
+      label: Standard
+      type: number
+    - name: high
+      label: High
+      type: number
+    - name: vaulted
+      label: Vaulted
+      type: number
+  - name: localPostcodes
+    label: Local postcode areas (get the discount)
+    type: string
+    list: true
+  - name: localDiscount
+    label: Local discount
+    type: number
+    description: 0.03 = 3% off
+    options:
+      min: 0
+      max: 1
+- name: services
+  label: Other services
+  type: file
+  path: _data/services.yml
+  format: yaml
+  fields:
+  - name: heading
+    label: Heading
+    type: string
+  - name: cards
+    label: Service cards
+    type: object
+    fields:
+    - name: title
+      label: Title
+      type: string
+    - name: text
+      label: Text
+      type: text
+    - name: image
+      label: Photo
+      type: image
+    - name: alt
+      label: Describe the photo
+      type: string
+    list:
+      collapsible:
+        collapsed: true
+        summary: '{title}'
+- name: how
+  label: How a job runs
+  type: file
+  path: _data/how.yml
+  format: yaml
+  fields:
+  - name: heading
+    label: Heading
+    type: string
+  - name: intro
+    label: Intro text
+    type: text
+  - name: steps
+    label: Steps
+    type: object
+    fields:
+    - name: title
+      label: Title
+      type: string
+    - name: text
+      label: Text
+      type: text
+    list:
+      collapsible:
+        collapsed: true
+        summary: '{title}'
+- name: accreditations
+  label: Qualifications
+  type: file
+  path: _data/accreditations.yml
+  format: yaml
+  fields:
+  - name: heading
+    label: Heading
+    type: string
+  - name: text
+    label: Text
+    type: text

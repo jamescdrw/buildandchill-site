@@ -1,0 +1,7 @@
+title: Build & Chill Property Services
+url: https://buildandchill.co.uk
+baseurl: ""
+exclude:
+  - README.md
+  - Gemfile
+  - Gemfile.lock

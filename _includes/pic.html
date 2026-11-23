@@ -1,0 +1,4 @@
+{%- assign src = include.src -%}
+{%- assign webp = src | replace: '.jpeg', '.webp' | replace: '.jpg', '.webp' | replace: '.png', '.webp' -%}
+{%- assign hit = site.static_files | where: "path", webp | first -%}
+<picture{% if include.class %} class="{{ include.class }}"{% endif %}>{% if hit and webp != src %}<source srcset="{{ webp | relative_url }}" type="image/webp">{% endif %}<img src="{{ src | relative_url }}" alt="{{ include.alt | escape }}"{% if include.eager %} fetchpriority="high"{% else %} loading="lazy"{% endif %}{% if include.position and include.position != '' %} style="object-position: {{ include.position }}"{% endif %}></picture>

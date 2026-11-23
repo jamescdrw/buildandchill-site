@@ -1,0 +1,20 @@
+headline: Your kitchen, fitted start to finish.
+intro: 20 years in the trade. Howdens kitchens and bathrooms, commercial ceilings and air conditioning across Leicester and Leicestershire. One team for all the trades, from the first measure to the final clean.
+image: /assets/img/hero-kitchen.jpg
+alt: Navy shaker kitchen with white quartz island and brass pendant lights
+strip:
+- bold: 20 years
+  text: in the trade
+  link: ''
+- bold: Howdens
+  text: kitchens & bathrooms
+  link: ''
+- bold: Commercial
+  text: suspended ceilings
+  link: ''
+- bold: Air con
+  text: Top brands, best prices
+  link: '#aircon'
+- bold: Extensions
+  text: drawings & planning
+  link: '#extensions'

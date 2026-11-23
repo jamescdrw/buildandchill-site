@@ -42,6 +42,6 @@
     var subject = 'Quote request: ' + d.get('type') + ' (' + d.get('postcode') + ')';
     var body = 'Name: ' + d.get('name') + '\nPhone: ' + d.get('phone') + '\nPostcode: ' + d.get('postcode') +
       '\nJob: ' + d.get('type') + '\n\n' + (d.get('message') || '');
-    window.location.href = 'mailto:Threadroll@hotmail.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+    window.location.href = 'mailto:' + (form.getAttribute('data-email') || 'Threadroll@hotmail.com') + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
   });
 })();
