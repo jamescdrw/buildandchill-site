@@ -22,7 +22,7 @@ houses:
     factor: 0.98
   terrace:
     label: Terraced house
-    factor: 1.0
+    factor: 1
   semi:
     label: Semi-detached house
     factor: 1.04
@@ -51,7 +51,7 @@ runs:
 brands:
   either:
     label: Best price on the day
-    factor: 1.0
+    factor: 1
   fujitsu:
     label: Fujitsu
     factor: 1.03
@@ -68,7 +68,7 @@ rooms:
   small:
     label: Up to 15 m²
     kw: 2.5 kW
-    factor: 1.0
+    factor: 1
     maxArea: 15
   medium:
     label: 15 to 25 m²
@@ -86,7 +86,7 @@ rooms:
     factor: 1.28
     maxArea: 100000
 ceilings:
-  standard: 1.0
+  standard: 1
   high: 1.12
   vaulted: 1.22
 localPostcodes:
