@@ -2,10 +2,17 @@
 <html lang="en-GB">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Admin | Build &amp; Chill</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" type="image/png" href="/assets/img/favicon.png">
+<link rel="manifest" href="/admin/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/admin/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="B&amp;C Admin">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#081C31">
 <script>window.BC_VERSION = "6"; window.BC_GATEWAY = ""; window.BC_SERVER = "https://buildandchill-admin.buildandchill-admin-worker.workers.dev";</script>
 <script src="/admin/app.js?v=6"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,6 +22,7 @@
   :root { --navy:#0D2A47; --deep:#081C31; --ice:#19A7D6; --steel:#5B6B7C; --line:#DCE3EA; --bg:#F3F6F9; }
   * { box-sizing: border-box; }
   [hidden] { display:none !important; }
+  @supports (padding: env(safe-area-inset-top)) { body { padding-top: env(safe-area-inset-top); } .bar { padding-bottom: calc(14px + env(safe-area-inset-bottom)); } }
   body { margin:0; font:16px/1.5 "Instrument Sans", system-ui, sans-serif; color:var(--navy); background:var(--bg); }
   h1, h2 { font-family:"Archivo", sans-serif; font-style:italic; font-weight:800; font-stretch:125%; margin:0 0 .4em; }
   button, input, textarea, select { font:inherit; color:inherit; }
