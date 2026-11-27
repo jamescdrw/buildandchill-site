@@ -6,14 +6,15 @@
 <title>Admin | Build &amp; Chill</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" type="image/png" href="/assets/img/favicon.png">
-<script>window.BC_VERSION = "3"; window.BC_GATEWAY = "";</script>
-<script src="/admin/app.js?v=3"></script>
+<script>window.BC_VERSION = "4"; window.BC_GATEWAY = "";</script>
+<script src="/admin/app.js?v=4"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@1,125,800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root { --navy:#0D2A47; --deep:#081C31; --ice:#19A7D6; --steel:#5B6B7C; --line:#DCE3EA; --bg:#F3F6F9; }
   * { box-sizing: border-box; }
+  [hidden] { display:none !important; }
   body { margin:0; font:16px/1.5 "Instrument Sans", system-ui, sans-serif; color:var(--navy); background:var(--bg); }
   h1, h2 { font-family:"Archivo", sans-serif; font-style:italic; font-weight:800; font-stretch:125%; margin:0 0 .4em; }
   button, input, textarea, select { font:inherit; color:inherit; }
@@ -103,6 +104,37 @@
   .compose { background:var(--bg); }
   .note { background:#FFF7E0; border-left:4px solid #E0A800; padding:10px 14px; border-radius:6px; margin:10px 0; }
   .wa { background:#1FA855; }
+  .vis-hide { position:absolute; width:1px; height:1px; opacity:0; overflow:hidden; }
+  label.btn { position:relative; }
+  .vgrid { display:grid; grid-template-columns:repeat(auto-fill, minmax(110px, 1fr)); gap:10px; margin-top:12px; }
+  .vgrid figure { margin:0; position:relative; }
+  .vgrid img, .vgrid video { width:100%; aspect-ratio:1; object-fit:cover; border-radius:6px; border:1px solid var(--line); display:block; }
+  .vgrid button { position:absolute; top:4px; right:4px; width:30px; height:30px; border-radius:50%; border:0; background:rgba(8,28,49,.8); color:#fff; font-size:1.1rem; cursor:pointer; }
+  .btn.rec { background:#C62828; font-size:1.05rem; padding:.85em 1.6em; }
+  .btn.rec.on { background:var(--navy); box-shadow:0 0 0 4px rgba(198,40,40,.35); }
+  .live-words { background:var(--bg); border-radius:6px; padding:10px 12px; font-style:italic; }
+  .vnote { border-top:1px solid var(--line); padding-top:10px; margin-top:12px; }
+  .vnote audio { width:100%; margin:6px 0; }
+  .said { color:var(--steel); margin:4px 0 0; }
+  .steps { padding-left:1.3em; margin:0; } .steps li { margin-bottom:16px; } .steps textarea { margin-top:8px; }
+  .card.ai { border-top:3px solid var(--ice); }
+  .jobtiles { display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:10px; margin-bottom:16px; }
+  .jobtile { background:#fff; border:2px solid var(--line); border-radius:8px; padding:16px 12px; font-weight:600; cursor:pointer; text-align:left; }
+  .jobtile[aria-pressed=true] { border-color:var(--ice); background:#EEF7FB; }
+  .qbar { position:sticky; bottom:0; background:#fff; border:1px solid var(--line); border-radius:8px; padding:12px 16px; display:flex; gap:16px; align-items:center; margin-bottom:16px; z-index:2; }
+  .qbar strong { font-size:1.4rem; font-family:Archivo, sans-serif; font-style:italic; }
+  details.card summary { cursor:pointer; }
+  .onsite { display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:12px; margin:0 0 24px; }
+  .onsite button { background:var(--navy); color:#fff; border:0; border-radius:8px; padding:18px 16px; text-align:left; cursor:pointer; }
+  .onsite button:hover { background:var(--ice); }
+  .onsite b { display:block; font-size:1.05rem; } .onsite span { color:#BFD3E6; font-size:.9rem; }
+  .netrow { display:grid; grid-template-columns:170px 1fr auto auto; gap:8px; align-items:center; margin-bottom:10px; }
+  .draft { border-top:1px solid var(--line); padding:8px 0; } .draft p { margin:0 0 4px; }
+  .small { font-size:.9rem; }
+  .list tbody tr.norow { cursor:default; }
+  aside details.more summary { color:#C9D6E3; padding:.5em .75em; cursor:pointer; }
+  aside details.more nav a { padding-left:1.5em; font-size:.95rem; }
+  @media (max-width:760px) { .netrow { grid-template-columns:1fr 1fr; } .netrow strong, .netrow input { grid-column:1 / -1; } aside details.more { display:none; } aside.open details.more { display:block; } }
   #app > aside { grid-row:1 / span 2; }
   #bizmain, #sitemain { grid-column:2; }
   #app { grid-template-rows:auto 1fr; }
@@ -158,23 +190,39 @@
 <div id="app">
   <aside>
     <div class="mtop"><img src="/assets/img/logo.png" alt="Build &amp; Chill"><button class="btn small" id="menubtn" type="button" aria-expanded="false">Menu</button></div>
-    <p class="grp">Business</p>
     <nav id="biznav">
       <a href="#" data-view="overview">Overview</a>
+    </nav>
+    <p class="grp">Jobs and quotes</p>
+    <nav>
+      <a href="#" data-view="visits">Site visits</a>
+      <a href="#" data-view="quick">Quick quote</a>
       <a href="#" data-view="quote">Quotes</a>
       <a href="#" data-view="invoice">Invoices</a>
       <a href="#" data-view="customers">Customers</a>
+    </nav>
+    <p class="grp">Money</p>
+    <nav>
       <a href="#" data-view="receipts">Receipts</a>
-      <a href="#" data-view="settings">Business settings</a>
-      <a href="#" data-view="mail">Message wording</a>
+      <a href="#" data-view="accounts">Accounts</a>
+    </nav>
+    <p class="grp">Marketing</p>
+    <nav>
+      <a href="#" data-view="socials">Socials</a>
+      <a href="#" data-view="reviews">Reviews</a>
+      <a href="#" data-view="blog">Blog</a>
     </nav>
     <p class="grp">Website</p>
     <nav id="webnav">
       <a href="#" data-view="live">Live editor</a>
-      <a href="#" data-view="reviews">Reviews</a>
-      <a href="#" data-view="blog">Blog</a>
+      <a href="#" data-name="ac_prices" id="acnav">Air con prices</a>
     </nav>
-    <nav id="nav"></nav>
+    <details class="more"><summary>Website sections</summary><nav id="nav"></nav></details>
+    <p class="grp">Settings</p>
+    <nav>
+      <a href="#" data-view="settings">Business settings</a>
+      <a href="#" data-view="mail">Message wording</a>
+    </nav>
     <a href="https://buildandchill.co.uk" target="_blank" rel="noopener" class="out">View live site</a>
     <a href="#" id="logout" class="out">Log out</a>
   </aside>
@@ -198,7 +246,8 @@ function human(k) {
   var map = { minPrice:'Minimum price (£)', depositPercent:'Deposit (%)', firstUnit:'First unit (£)', extraUnit:'Each extra unit (£)',
     outdoorMultiUplift:'Multi-split outdoor unit extra (£)', add:'Extra cost (£)', factor:'Price multiplier', maxArea:'Up to area (m²)',
     localPostcodes:'Local postcodes', localDiscount:'Local discount (0.03 = 3%)', delay_seconds:'Show after (seconds)',
-    percent:'Discount (%)', enabled:'Switched on', payment_link:'Deposit payment link' };
+    percent:'Discount (%)', enabled:'Switched on', payment_link:'Deposit payment link',
+    whatsapp:'WhatsApp number (quote chat sends to this)' };
   if (map[k]) return map[k];
   k = String(k).replace(/_/g, ' ').replace(/([a-z])([A-Z])/g, '$1 $2');
   return k.charAt(0).toUpperCase() + k.slice(1);
@@ -342,7 +391,8 @@ function start() {
     if (!d || !Array.isArray(d)) { if (d && d.error) { var er = document.getElementById('login-err'); er.textContent = d.error; er.hidden = false; } return; }
     sections = d;
     var nav = document.getElementById('nav'); nav.innerHTML = '';
-    d.filter(function (s) { return s.name !== 'reviews'; }).forEach(function (s) {
+    document.getElementById('acnav').onclick = function (e) { e.preventDefault(); document.querySelector('aside').classList.remove('open'); openSection('ac_prices'); };
+    d.filter(function (s) { return s.name !== 'reviews' && s.name !== 'ac_prices'; }).forEach(function (s) {
       var a = document.createElement('a'); a.href = '#'; a.textContent = s.label; a.dataset.name = s.name;
       a.onclick = function (e) { e.preventDefault(); openSection(s.name); };
       nav.appendChild(a);
@@ -409,7 +459,7 @@ function navMark(view) {
   });
 }
 function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
-function gbp(n) { return '£' + Number(n || 0).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+function gbp(n) { n = Number(n || 0); return (n < 0 ? '−£' : '£') + Math.abs(n).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
 function ukDate(iso) { if (!iso) return ''; var d = new Date(iso + 'T12:00:00'); return d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }); }
 function api(path, body) {
   return fetch(path, body === undefined ? {} : { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) })
@@ -427,10 +477,12 @@ function loadBase() {
 
 function bizView(view, arg) {
   bm.classList.remove('wide'); window.onmessage = null;
-  showSite(false); navMark(view === 'doc' ? arg.kind : view === 'customer' ? 'customers' : view === 'receipt' ? 'receipts' : view === 'post' ? 'blog' : view);
+  if (window.BCX && BCX._stopRec) BCX._stopRec();
+  showSite(false); navMark(view === 'doc' ? arg.kind : view === 'customer' ? 'customers' : view === 'receipt' ? 'receipts' : view === 'post' ? 'blog' : view === 'visit' ? 'visits' : view);
   document.querySelector('aside').classList.remove('open');
   window.scrollTo(0, 0);
   loadBase().then(function () {
+    if (window.BCX && BCX[view]) return BCX[view](arg || {});
     if (view === 'overview') return overview();
     if (view === 'quote' || view === 'invoice') return docList(view);
     if (view === 'doc') return docEditor(arg);
@@ -446,7 +498,7 @@ function bizView(view, arg) {
     if (view === 'receipt') return receiptEditor(arg);
   }).catch(function (e) { if (e.message !== 'login') bm.innerHTML = '<p class="msg bad">' + esc(e.message) + '</p>'; });
 }
-document.querySelectorAll('#biznav a, #webnav a').forEach(function (a) {
+document.querySelectorAll('aside a[data-view]').forEach(function (a) {
   a.onclick = function (e) { e.preventDefault(); bizView(a.dataset.view); };
 });
 
@@ -455,7 +507,11 @@ function overview() {
   Promise.all([api('/api/summary'), api('/api/docs?kind=invoice'), api('/api/docs?kind=quote')]).then(function (r) {
     var s = r[0];
     bm.innerHTML = '<div class="head"><h2>Overview</h2><div class="actions">' +
-      '<button class="btn" id="nq">New quote</button><button class="btn line" id="ni">New invoice</button></div></div>' +
+      '<button class="btn line" id="nq">New quote</button><button class="btn line" id="ni">New invoice</button></div></div>' +
+      '<div class="onsite"><button type="button" id="o-visit"><b>Start a site visit</b><span>Photos and voice notes</span></button>' +
+      '<button type="button" id="o-quick"><b>Quick quote</b><span>Tap your usual prices</span></button>' +
+      '<button type="button" id="o-rec"><b>Scan a receipt</b><span>Snap it with the camera</span></button>' +
+      '<button type="button" id="o-post"><b>Post on socials</b><span>Show off a finished job</span></button></div>' +
       '<div class="tiles">' +
       '<div class="tile"><b>' + gbp(s.unpaid_total) + '</b><span>Waiting to be paid</span></div>' +
       '<div class="tile' + (s.overdue_count ? ' warn' : '') + '"><b>' + gbp(s.overdue_total) + '</b><span>Overdue (' + s.overdue_count + ' invoice' + (s.overdue_count === 1 ? '' : 's') + ')</span></div>' +
@@ -464,6 +520,10 @@ function overview() {
       '<h3>Recent invoices</h3>' + docTable(r[1].slice(0, 5), 'invoice') +
       '<h3 style="margin-top:28px">Recent quotes</h3>' + docTable(r[2].slice(0, 5), 'quote');
     document.getElementById('nq').onclick = function () { bizView('doc', { kind:'quote' }); };
+    document.getElementById('o-visit').onclick = function () { BCX.newVisit(); };
+    document.getElementById('o-quick').onclick = function () { bizView('quick'); };
+    document.getElementById('o-rec').onclick = function () { bizView('receipt', {}); };
+    document.getElementById('o-post').onclick = function () { bizView('socials'); };
     document.getElementById('ni').onclick = function () { bizView('doc', { kind:'invoice' }); };
     bindRows();
   });
@@ -1158,5 +1218,6 @@ function postEditor(arg) {
   };
 }
 </script>
+<script src="/admin/extras.js?v=4"></script>
 </body>
 </html>

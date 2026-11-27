@@ -372,6 +372,7 @@
       {% if site.data.contact.phone and site.data.contact.phone != "" %}<p class="contact-line">Call <a href="tel:{{ site.data.contact.phone | replace: ' ', '' }}">{{ site.data.contact.phone }}</a></p>
       {% endif %}<p class="contact-line">Email <a href="mailto:{{ site.data.contact.email }}">{{ site.data.contact.email }}</a></p>
       <p class="contact-line muted">{{ site.data.contact.name_line | escape }}</p>
+      <p><button type="button" class="btn" data-open-chat>Answer a few quick questions instead</button></p>
     </div>
     <form class="quote-form" id="quote-form" data-email="{{ site.data.contact.email }}" novalidate>
       <div class="field">

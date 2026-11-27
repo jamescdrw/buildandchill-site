@@ -228,7 +228,7 @@
     try { seen = localStorage.getItem('bc-offer-seen') === '1'; } catch (x) {}
     var lastFocus = null;
     var openOffer = function () {
-      if (!offer.hidden) return;
+      if (!offer.hidden || document.querySelector('#qchat.is-open')) return;
       lastFocus = document.activeElement;
       offer.hidden = false;
       document.getElementById('offer-go').focus();
