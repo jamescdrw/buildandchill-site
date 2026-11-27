@@ -6,8 +6,8 @@
 <title>Admin | Build &amp; Chill</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" type="image/png" href="/assets/img/favicon.png">
-<script>window.BC_VERSION = "5"; window.BC_GATEWAY = ""; window.BC_SERVER = "https://buildandchill-admin.buildandchill-admin-worker.workers.dev";</script>
-<script src="/admin/app.js?v=5"></script>
+<script>window.BC_VERSION = "6"; window.BC_GATEWAY = ""; window.BC_SERVER = "https://buildandchill-admin.buildandchill-admin-worker.workers.dev";</script>
+<script src="/admin/app.js?v=6"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@1,125,800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -232,7 +232,7 @@
     <a href="https://buildandchill.co.uk" target="_blank" rel="noopener" class="out">View live site</a>
     <a href="#" id="logout" class="out">Log out</a>
   </aside>
-  <p class="demo-banner" id="demo-banner" hidden>Demo version: try anything you like. Nothing is saved to the real website, and changes stay on this device only. Enquiries from the website chat are real. <a href="#" id="demo-reset">Start the demo again</a></p>
+  <p class="demo-banner" id="demo-banner" hidden>Demo version: try anything you like. Nothing is saved to the real website, and changes stay on this device only. Enquiries from the website chat are real. <a href="#" id="demo-reset">Put the sample data back</a> · <a href="#" id="demo-clear">Clear sample data and start fresh</a></p>
   <main id="bizmain" hidden></main>
   <main id="sitemain">
     <h2 id="title"></h2>
@@ -445,7 +445,16 @@ document.getElementById('save').onclick = function () {
 
 if (BC.DEMO) {
   document.getElementById('demo-banner').hidden = false;
-  document.getElementById('demo-reset').onclick = function (e) { e.preventDefault(); BC.resetDemo(); localStorage.removeItem('bc-live-ops'); location.reload(); };
+  document.getElementById('demo-reset').onclick = function (e) {
+    e.preventDefault();
+    if (!confirm('Replace everything with the sample customers, quotes, invoices and receipts?')) return;
+    BC.resetDemo(); localStorage.removeItem('bc-live-ops'); location.reload();
+  };
+  document.getElementById('demo-clear').onclick = function (e) {
+    e.preventDefault();
+    if (!confirm('Remove all customers, quotes, invoices and receipts so you can start fresh? Your business settings and price list stay. This cannot be undone.')) return;
+    BC.clearDemo(); localStorage.removeItem('bc-live-ops'); location.reload();
+  };
 }
 if (BC.getKey()) start();
 </script>
@@ -1229,6 +1238,6 @@ function postEditor(arg) {
   };
 }
 </script>
-<script src="/admin/extras.js?v=5"></script>
+<script src="/admin/extras.js?v=6"></script>
 </body>
 </html>
