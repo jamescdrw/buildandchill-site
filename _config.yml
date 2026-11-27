@@ -14,6 +14,9 @@ defaults:
   - scope: { path: "admin" }
     values: { sitemap: false }
 exclude:
+  - netlify.toml
+  - _config_preview.yml
+  - vendor
   - README.md
   - Gemfile
   - Gemfile.lock

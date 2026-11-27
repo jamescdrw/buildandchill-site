@@ -1,0 +1,3 @@
+# Extra settings for the private preview build (Netlify), layered on _config.yml.
+preview: true
+admin_url: https://admin.buildandchill.co.uk

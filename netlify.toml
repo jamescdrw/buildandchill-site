@@ -1,0 +1,21 @@
+# Private preview of the website for the admin's Live editor.
+# The live site is built by GitHub Pages and ignores this file.
+[build]
+  command = "bundle exec jekyll build --config _config.yml,_config_preview.yml && echo \"$COMMIT_REF\" > _site/version.txt"
+  publish = "_site"
+
+[build.environment]
+  RUBY_VERSION = "3.3.6"
+  JEKYLL_ENV = "production"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    Content-Security-Policy = "frame-ancestors https://admin.buildandchill.co.uk https://*.netlify.app"
+
+[[headers]]
+  for = "/version.txt"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Cache-Control = "no-store"
