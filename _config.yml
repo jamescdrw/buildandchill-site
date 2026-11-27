@@ -1,6 +1,18 @@
 title: Build & Chill Property Services
+description: Kitchens, bathrooms, extensions, commercial ceilings and air conditioning installation in Leicester and Leicestershire.
 url: https://buildandchill.co.uk
 baseurl: ""
+lang: en_GB
+timezone: Europe/London
+permalink: /blog/:title/
+plugins:
+  - jekyll-sitemap
+  - jekyll-feed
+feed:
+  path: feed.xml
+defaults:
+  - scope: { path: "admin" }
+    values: { sitemap: false }
 exclude:
   - README.md
   - Gemfile

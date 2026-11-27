@@ -1,0 +1,41 @@
+---
+title: Advice and guides
+seo_title: "Home Improvement Advice, Leicester | Build & Chill Blog"
+description: "Practical advice on air conditioning, kitchens, bathrooms and extensions in Leicester and Leicestershire, from a local team with 20 years in the trade."
+permalink: /blog/
+---
+<!doctype html>
+<html lang="en-GB">
+<head>
+{% include head.html %}
+</head>
+<body>
+{% include inner-header.html %}
+<main id="main">
+  <section class="page-hero page-hero-plain">
+    <div class="wrap">
+      <p class="crumbs"><a href="/">Home</a> <span aria-hidden="true">/</span> Advice</p>
+      <h1 class="h1">Advice and guides</h1>
+      <p class="lead">Straight answers on air con, kitchens, bathrooms and extensions, from 20 years in the trade.</p>
+    </div>
+  </section>
+  <section class="wrap post-list">
+    {%- for post in site.posts %}
+    <a class="post-card" href="{{ post.url }}">
+      {%- if post.image %}{% include pic.html src=post.image alt="" %}{% endif %}
+      <div>
+        <p class="muted">{{ post.date | date: "%-d %B %Y" }}</p>
+        <h2>{{ post.title | escape }}</h2>
+        <p>{{ post.description | escape }}</p>
+      </div>
+    </a>
+    {%- else %}
+    <p>New guides are on the way.</p>
+    {%- endfor %}
+  </section>
+  {% include cta.html %}
+</main>
+{% include footer.html %}
+<script src="/assets/js/main.js" defer></script>
+</body>
+</html>

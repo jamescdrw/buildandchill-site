@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+{% include head.html %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": {{ page.title | jsonify }},
+  "description": {{ page.description | jsonify }},
+  "image": {{ page.image | default: site.data.hero.image | absolute_url | jsonify }},
+  "datePublished": "{{ page.date | date_to_xmlschema }}",
+  "dateModified": "{{ page.last_modified_at | default: page.date | date_to_xmlschema }}",
+  "mainEntityOfPage": {{ page.url | absolute_url | jsonify }},
+  "author": {"@type": "Person", "name": "Ashley Finlay-Thurman"},
+  "publisher": {"@type": "Organization", "name": "Build & Chill Property Services", "logo": {"@type": "ImageObject", "url": "https://buildandchill.co.uk/assets/img/icon-512.png"}}
+}
+</script>
+</head>
+<body>
+{% include inner-header.html %}
+<main id="main">
+  <article class="post">
+    <header class="wrap post-head">
+      <p class="crumbs"><a href="/">Home</a> <span aria-hidden="true">/</span> <a href="/blog/">Advice</a></p>
+      <h1 class="h1">{{ page.title | escape | replace: 'air con', 'air&nbsp;con' | replace: 'Air con', 'Air&nbsp;con' }}</h1>
+      <p class="muted">{{ page.date | date: "%-d %B %Y" }} · Ashley Finlay-Thurman, Build &amp; Chill</p>
+    </header>
+    {%- if page.image %}
+    <div class="wrap post-img">{% include pic.html src=page.image alt=page.image_alt eager=true %}</div>
+    {%- endif %}
+    <div class="wrap prose">
+      {{ content }}
+    </div>
+  </article>
+  {% include cta.html %}
+</main>
+{% include footer.html %}
+<script src="/assets/js/main.js" defer></script>
+</body>
+</html>

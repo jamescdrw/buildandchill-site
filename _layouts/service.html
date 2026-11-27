@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+{% include head.html %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Service",
+      "name": {{ page.title | jsonify }},
+      "description": {{ page.description | jsonify }},
+      "url": {{ page.url | absolute_url | jsonify }},
+      "image": {{ page.image | absolute_url | jsonify }},
+      "areaServed": [{"@type": "City", "name": "Leicester"}, {"@type": "AdministrativeArea", "name": "Leicestershire"}],
+      "provider": {
+        "@type": "HomeAndConstructionBusiness",
+        "name": "Build & Chill Property Services",
+        "url": "https://buildandchill.co.uk/",
+        "email": {{ site.data.contact.email | jsonify }},
+        "address": {"@type": "PostalAddress", "addressLocality": "Birstall", "addressRegion": "Leicestershire", "postalCode": "LE4", "addressCountry": "GB"}
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://buildandchill.co.uk/"},
+        {"@type": "ListItem", "position": 2, "name": {{ page.title | jsonify }}, "item": {{ page.url | absolute_url | jsonify }}}
+      ]
+    }{% if page.faq %},
+    {
+      "@type": "FAQPage",
+      "mainEntity": [{% for f in page.faq %}
+        {"@type": "Question", "name": {{ f.q | jsonify }}, "acceptedAnswer": {"@type": "Answer", "text": {{ f.a | jsonify }}}}{% unless forloop.last %},{% endunless %}{% endfor %}
+      ]
+    }{% endif %}
+  ]
+}
+</script>
+</head>
+<body>
+{% include inner-header.html %}
+<main id="main">
+  <section class="page-hero">
+    <div class="wrap page-hero-row">
+      <div>
+        <p class="crumbs"><a href="/">Home</a> <span aria-hidden="true">/</span> {{ page.title | escape }}</p>
+        <h1 class="h1">{{ page.title | escape | replace: 'air con', 'air&nbsp;con' | replace: 'Air con', 'Air&nbsp;con' }}</h1>
+        <p class="lead">{{ page.description | escape }}</p>
+        <a class="btn" href="{{ page.cta_link | default: '/#quote' }}">{{ page.cta_text | default: "Get a free quote" }}</a>
+      </div>
+      {% include pic.html src=page.image alt=page.image_alt class="page-hero-img" eager=true %}
+    </div>
+  </section>
+  <article class="wrap prose">
+    {{ content }}
+  </article>
+  {%- if page.faq %}
+  <section class="wrap faq">
+    <h2 class="h2">Common questions</h2>
+    {%- for f in page.faq %}
+    <details><summary>{{ f.q | escape }}</summary><p>{{ f.a | escape }}</p></details>
+    {%- endfor %}
+  </section>
+  {%- endif %}
+  {% include cta.html link=page.cta_link text=page.cta_text %}
+</main>
+{% include footer.html %}
+<script src="/assets/js/main.js" defer></script>
+</body>
+</html>
