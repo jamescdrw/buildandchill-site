@@ -1,41 +1,1150 @@
----
----
 <!doctype html>
 <html lang="en-GB">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Admin | Build &amp; Chill Property Services</title>
+<title>Admin | Build &amp; Chill</title>
 <meta name="robots" content="noindex, nofollow">
-<meta name="theme-color" content="#0D2A47">
 <link rel="icon" type="image/png" href="/assets/img/favicon.png">
+<script>window.BC_VERSION = "1";</script>
+<script src="/admin/app.js?v=1"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,400..900;1,62..125,400..900&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/css/styles.css">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@1,125,800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  body { background: var(--navy-deep); min-height: 100vh; display: grid; place-items: center; padding: 24px; }
-  .admin-card { background: #fff; border-radius: 8px; padding: clamp(28px, 5vw, 48px); max-width: 520px; width: 100%; }
-  .admin-card img { width: 180px; margin-bottom: 24px; }
-  .admin-card .h2 { font-size: 2rem; }
-  .admin-card ol { padding-left: 1.2em; color: var(--steel); }
-  .admin-card li { margin-bottom: .5em; }
-  .admin-card .btn { width: 100%; text-align: center; margin: 12px 0 18px; }
-  .back { font-size: .95rem; }
+  :root { --navy:#0D2A47; --deep:#081C31; --ice:#19A7D6; --steel:#5B6B7C; --line:#DCE3EA; --bg:#F3F6F9; }
+  * { box-sizing: border-box; }
+  body { margin:0; font:16px/1.5 "Instrument Sans", system-ui, sans-serif; color:var(--navy); background:var(--bg); }
+  h1, h2 { font-family:"Archivo", sans-serif; font-style:italic; font-weight:800; font-stretch:125%; margin:0 0 .4em; }
+  button, input, textarea, select { font:inherit; color:inherit; }
+  :focus-visible { outline:3px solid var(--ice); outline-offset:2px; }
+  .btn { background:var(--ice); color:#fff; border:0; border-radius:6px; padding:.7em 1.3em; font-weight:600; cursor:pointer; }
+  a.btn { text-decoration:none; display:inline-block; }
+  .list td:first-child, .list td:nth-child(4), .list td:nth-child(5) { white-space:nowrap; }
+  .btn:disabled { opacity:.6; cursor:wait; }
+  .btn.ghost { background:none; color:var(--steel); padding:.4em .6em; }
+  .btn.small { padding:.35em .8em; font-size:.9rem; }
+  .btn.danger { background:none; color:#B3261E; padding:.35em .6em; font-size:.9rem; }
+
+  /* login */
+  #login { min-height:100vh; display:grid; place-items:center; background:var(--deep); padding:24px; }
+  #login form { background:#fff; border-radius:8px; padding:40px; width:100%; max-width:420px; }
+  #login img { width:170px; margin-bottom:20px; }
+  label.f { display:block; font-weight:600; margin:14px 0 4px; }
+  input[type=text], input[type=email], input[type=password], input[type=number], textarea {
+    width:100%; border:1px solid var(--line); border-radius:6px; padding:.6em .7em; background:#fff; }
+  textarea { min-height:5.5em; resize:vertical; }
+  .err { color:#B3261E; margin:12px 0 0; }
+
+  /* app */
+  #app { display:none; grid-template-columns:250px 1fr; min-height:100vh; }
+  aside { background:var(--deep); color:#fff; padding:24px 16px; position:sticky; top:0; height:100vh; overflow:auto; }
+  aside img { width:150px; margin:0 8px 24px; }
+  aside a { display:block; color:#C9D6E3; text-decoration:none; padding:.5em .75em; border-radius:6px; }
+  aside a:hover { background:rgba(255,255,255,.06); color:#fff; }
+  aside a[aria-current] { background:var(--ice); color:#fff; font-weight:600; }
+  aside .out { margin-top:24px; color:#8FA3B8; }
+  main { padding:32px clamp(20px, 4vw, 56px) 120px; max-width:900px; }
+  .intro { color:var(--steel); margin:0 0 24px; }
+  fieldset { border:1px solid var(--line); border-radius:8px; padding:8px 18px 18px; margin:16px 0; background:#fff; }
+  fieldset fieldset { background:var(--bg); }
+  legend { font-weight:600; padding:0 6px; }
+  .row { margin-bottom:10px; }
+  .row > span { display:block; font-weight:600; font-size:.92rem; margin:10px 0 4px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(170px, 1fr)); gap:0 16px; }
+  .chk { display:flex; gap:8px; align-items:center; font-weight:600; margin:12px 0; }
+  .chk input { width:20px; height:20px; }
+  .item-head { display:flex; justify-content:space-between; align-items:center; }
+  .bar { position:fixed; left:250px; right:0; bottom:0; background:#fff; border-top:1px solid var(--line);
+    padding:14px clamp(20px, 4vw, 56px); display:flex; gap:16px; align-items:center; }
+  .msg { margin:0; }
+  .msg.ok { color:#1B7A3A; } .msg.bad { color:#B3261E; }
+  .grp { color:#8FA3B8; font-size:.85rem; margin:18px 12px 6px; }
+  .tiles { display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:14px; margin:8px 0 28px; }
+  .tile { background:#fff; border:1px solid var(--line); border-radius:8px; padding:16px 18px; }
+  .tile b { display:block; font-size:1.6rem; font-family:Archivo, sans-serif; font-style:italic; font-weight:800; }
+  .tile span { color:var(--steel); font-size:.92rem; }
+  .tile.warn b { color:#B3261E; }
+  .head { display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; margin-bottom:16px; }
+  .head h2 { margin:0; }
+  table.list { width:100%; border-collapse:collapse; background:#fff; border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+  .list th { text-align:left; font-size:.85rem; color:var(--steel); font-weight:600; padding:10px 12px; border-bottom:1px solid var(--line); }
+  .list td { padding:11px 12px; border-bottom:1px solid var(--line); }
+  .list tbody tr { cursor:pointer; } .list tbody tr:hover { background:#F7FAFC; }
+  .list .n, .items-ed .n { text-align:right; white-space:nowrap; }
+  .empty { background:#fff; border:1px dashed var(--line); border-radius:8px; padding:32px; text-align:center; color:var(--steel); }
+  .badge { display:inline-block; font-size:.8rem; font-weight:600; padding:.15em .6em; border-radius:99px; background:#E6ECF2; color:var(--navy); }
+  .badge.sent, .badge.unpaid { background:#E3F4FB; color:#0B6E91; }
+  .badge.accepted, .badge.paid { background:#E3F3E8; color:#1B7A3A; }
+  .badge.declined, .badge.cancelled, .badge.expired { background:#EEE; color:#666; }
+  .badge.overdue { background:#FBE4E2; color:#B3261E; }
+  .card { background:#fff; border:1px solid var(--line); border-radius:8px; padding:20px 22px; margin-bottom:16px; }
+  .two { display:grid; grid-template-columns:1fr 1fr; gap:0 18px; }
+  .three { display:grid; grid-template-columns:repeat(3, 1fr); gap:0 18px; }
+  select { width:100%; border:1px solid var(--line); border-radius:6px; padding:.6em .7em; background:#fff; }
+  table.items-ed { width:100%; border-collapse:collapse; }
+  .items-ed th { text-align:left; font-size:.85rem; color:var(--steel); font-weight:600; padding:4px 6px; }
+  .items-ed td { padding:4px 6px; vertical-align:top; }
+  .items-ed td.amt { padding-top:.75em; }
+  .items-ed input { padding:.5em .6em; }
+  .totals { margin:14px 0 0 auto; width:280px; }
+  .totals div { display:flex; justify-content:space-between; padding:3px 0; }
+  .totals .grand { font-weight:700; font-size:1.15rem; border-top:2px solid var(--navy); margin-top:6px; padding-top:8px; }
+  .actions { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:8px; }
+  .btn.line { background:#fff; color:var(--navy); border:1px solid var(--line); }
+  .back { color:var(--steel); text-decoration:none; display:inline-block; margin-bottom:10px; }
+  .mtop { display:flex; justify-content:space-between; align-items:center; }
+  #menubtn { display:none; }
+  .snap { display:block; width:100%; padding:28px; border:2px dashed var(--ice); border-radius:10px; background:#EEF7FB; color:var(--navy);
+    font-weight:600; font-size:1.1rem; text-align:center; cursor:pointer; }
+  .snap input { position:absolute; width:1px; height:1px; opacity:0; }
+  .rimg { max-width:100%; max-height:420px; border-radius:8px; border:1px solid var(--line); display:block; margin:12px 0; }
+  .thumb { width:44px; height:44px; object-fit:cover; border-radius:4px; border:1px solid var(--line); vertical-align:middle; }
+  .compose { background:var(--bg); }
+  .note { background:#FFF7E0; border-left:4px solid #E0A800; padding:10px 14px; border-radius:6px; margin:10px 0; }
+  .wa { background:#1FA855; }
+  #bizmain.wide { max-width:none; }
+  .live { display:grid; grid-template-columns:1fr 340px; gap:18px; align-items:start; }
+  .frame-wrap { background:#fff; border:1px solid var(--line); border-radius:8px; overflow:hidden; display:flex; justify-content:center; }
+  .frame-wrap iframe { border:0; width:100%; height:calc(100vh - 170px); display:block; background:#fff; transition:width .2s; }
+  .frame-wrap.phone iframe { width:390px; }
+  .panel { background:#fff; border:1px solid var(--line); border-radius:8px; padding:18px; position:sticky; top:16px; }
+  .panel img { width:100%; border-radius:6px; border:1px solid var(--line); margin:8px 0; }
+  .seg { display:inline-flex; border:1px solid var(--line); border-radius:6px; overflow:hidden; }
+  .seg button { border:0; background:#fff; padding:.5em .9em; cursor:pointer; }
+  .seg button[aria-pressed=true] { background:var(--navy); color:#fff; }
+  .pending { font-weight:600; color:#B36B00; }
+  .rv { background:#fff; border:1px solid var(--line); border-top:3px solid var(--ice); border-radius:8px; padding:16px 18px; margin-bottom:12px; }
+  .rv .st { color:#F2A900; letter-spacing:2px; }
+  .rv p { margin:.4em 0; }
+  .rv small { color:var(--steel); }
+  @media (max-width:1100px) { .live { grid-template-columns:1fr; } .panel { position:static; } }
+  @media (max-width:760px) {
+    aside { padding:12px 16px; }
+    aside img { width:110px; margin:0; }
+    #menubtn { display:inline-block; }
+    aside nav, aside .grp, aside .out { display:none; }
+    aside.open nav, aside.open .grp, aside.open .out { display:block; }
+    main { padding:20px 16px 120px; }
+    .items-ed th:nth-child(4), .items-ed td.amt { display:none; }
+    .list th:nth-child(3), .list td:nth-child(3), .list th:nth-child(5), .list td:nth-child(5) { display:none; }
+    .two, .three { grid-template-columns:1fr; }
+    #app { grid-template-columns:1fr; }
+    aside { position:static; height:auto; }
+    .bar { left:0; }
+  }
 </style>
 </head>
 <body>
-<main class="admin-card">
-  <img src="/assets/img/logo.png" alt="Build &amp; Chill Property Services" width="640" height="437">
-  <h1 class="h2">Edit the website</h1>
-  <p>Change text, photos, air con prices and contact details. Saved changes go live on buildandchill.co.uk within about two minutes.</p>
-  <a class="btn" href="https://app.pagescms.org/" rel="noopener">Log in to edit</a>
-  <ol>
-    <li>Log in with the email address you were invited with. You'll get a sign-in link by email.</li>
-    <li>Open <strong>buildandchill-site</strong>, then pick a section from the menu on the left.</li>
-    <li>Make your changes and press <strong>Save</strong>.</li>
-  </ol>
-  <p class="back"><a href="/">Back to the website</a></p>
-</main>
+
+<div id="login">
+  <form id="login-form">
+    <img src="/assets/img/logo.png" alt="Build &amp; Chill Property Services">
+    <h1>Admin login</h1>
+    <p>Paste your admin key. You only need to do this once on each phone or computer.</p>
+    <label class="f" for="k">Admin key</label>
+    <input id="k" type="password" autocomplete="current-password" spellcheck="false" required>
+    <p class="err" id="login-err" hidden></p>
+    <p><button class="btn" type="submit">Log in</button></p>
+    <p class="intro" style="font-size:.9rem">Don't share this key. Anyone who has it can change the website and see customer details. If a phone is lost, the key can be cancelled on GitHub.</p>
+  </form>
+</div>
+
+<div id="app">
+  <aside>
+    <div class="mtop"><img src="/assets/img/logo.png" alt="Build &amp; Chill"><button class="btn small" id="menubtn" type="button" aria-expanded="false">Menu</button></div>
+    <p class="grp">Business</p>
+    <nav id="biznav">
+      <a href="#" data-view="overview">Overview</a>
+      <a href="#" data-view="quote">Quotes</a>
+      <a href="#" data-view="invoice">Invoices</a>
+      <a href="#" data-view="customers">Customers</a>
+      <a href="#" data-view="receipts">Receipts</a>
+      <a href="#" data-view="settings">Business settings</a>
+      <a href="#" data-view="mail">Message wording</a>
+    </nav>
+    <p class="grp">Website</p>
+    <nav id="webnav">
+      <a href="#" data-view="live">Live editor</a>
+      <a href="#" data-view="reviews">Reviews</a>
+      <a href="#" data-view="blog">Blog</a>
+    </nav>
+    <nav id="nav"></nav>
+    <a href="https://buildandchill.co.uk" target="_blank" rel="noopener" class="out">View live site</a>
+    <a href="#" id="logout" class="out">Log out</a>
+  </aside>
+  <main id="bizmain" hidden></main>
+  <main id="sitemain">
+    <h2 id="title"></h2>
+    <p class="intro">Change anything below, then press <strong>Save and publish</strong>. The live website updates in about 2 minutes. (This also publishes anything waiting in the Live editor.)</p>
+    <form id="editor"></form>
+  </main>
+  <div class="bar" id="sitebar">
+    <button class="btn" id="save" type="button">Save and publish</button>
+    <p class="msg" id="msg" role="status"></p>
+  </div>
+</div>
+
+<script>
+var sections = [], current = null;
+
+function human(k) {
+  var map = { minPrice:'Minimum price (£)', depositPercent:'Deposit (%)', firstUnit:'First unit (£)', extraUnit:'Each extra unit (£)',
+    outdoorMultiUplift:'Multi-split outdoor unit extra (£)', add:'Extra cost (£)', factor:'Price multiplier', maxArea:'Up to area (m²)',
+    localPostcodes:'Local postcodes', localDiscount:'Local discount (0.03 = 3%)', delay_seconds:'Show after (seconds)',
+    percent:'Discount (%)', enabled:'Switched on', payment_link:'Deposit payment link' };
+  if (map[k]) return map[k];
+  k = String(k).replace(/_/g, ' ').replace(/([a-z])([A-Z])/g, '$1 $2');
+  return k.charAt(0).toUpperCase() + k.slice(1);
+}
+
+function scalarInput(val, path) {
+  var el;
+  if (typeof val === 'boolean') {
+    el = document.createElement('input'); el.type = 'checkbox'; el.checked = val; el.dataset.kind = 'bool';
+  } else if (typeof val === 'number') {
+    el = document.createElement('input'); el.type = 'number'; el.step = 'any'; el.value = val; el.dataset.kind = 'num';
+  } else {
+    val = val == null ? '' : String(val);
+    if (val.length > 70) { el = document.createElement('textarea'); el.rows = Math.min(8, Math.ceil(val.length / 80) + 1); }
+    else { el = document.createElement('input'); el.type = 'text'; }
+    el.value = val; el.dataset.kind = 'str';
+  }
+  el.dataset.path = JSON.stringify(path);
+  return el;
+}
+
+function render(val, path, key, parent) {
+  if (Array.isArray(val) || (val && typeof val === 'object')) {
+    var fs = document.createElement('fieldset');
+    var lg = document.createElement('legend'); lg.textContent = human(key); fs.appendChild(lg);
+    if (Array.isArray(val)) {
+      if (val.length && val.every(function (v) { return typeof v !== 'object'; })) {
+        var ta = document.createElement('textarea');
+        ta.value = val.join('\n'); ta.dataset.kind = 'lines'; ta.dataset.path = JSON.stringify(path);
+        ta.setAttribute('aria-label', human(key) + ', one per line');
+        var hint = document.createElement('span'); hint.textContent = 'One per line';
+        var row = document.createElement('div'); row.className = 'row'; row.append(hint, ta); fs.appendChild(row);
+      } else {
+        val.forEach(function (item, i) {
+          var box = document.createElement('fieldset');
+          var head = document.createElement('div'); head.className = 'item-head';
+          var t = document.createElement('legend'); t.textContent = human(key) + ' ' + (i + 1);
+          var rm = document.createElement('button'); rm.type = 'button'; rm.className = 'btn danger'; rm.textContent = 'Remove';
+          rm.onclick = function () { mutate(path, function (arr) { arr.splice(i, 1); }); };
+          box.appendChild(t); head.appendChild(rm); box.appendChild(head);
+          Object.keys(item).forEach(function (k) { render(item[k], path.concat([i, k]), k, box); });
+          fs.appendChild(box);
+        });
+        var add = document.createElement('button'); add.type = 'button'; add.className = 'btn small'; add.textContent = 'Add another';
+        add.onclick = function () { mutate(path, function (arr) {
+          var copy = JSON.parse(JSON.stringify(arr[arr.length - 1] || {}));
+          Object.keys(copy).forEach(function (k) { if (typeof copy[k] === 'string') copy[k] = ''; });
+          arr.push(copy); }); };
+        fs.appendChild(add);
+      }
+    } else {
+      var simple = Object.keys(val).filter(function (k) { return typeof val[k] !== 'object' || val[k] === null; });
+      var holder = fs;
+      if (simple.length > 2 && simple.every(function (k) { return typeof val[k] === 'number'; })) {
+        holder = document.createElement('div'); holder.className = 'grid'; fs.appendChild(holder);
+      }
+      Object.keys(val).forEach(function (k) {
+        render(val[k], path.concat([k]), k, (typeof val[k] === 'object' && val[k] !== null) ? fs : holder);
+      });
+    }
+    parent.appendChild(fs);
+    return;
+  }
+  var inp = scalarInput(val, path);
+  if (inp.type === 'checkbox') {
+    var lab = document.createElement('label'); lab.className = 'chk'; lab.append(inp, document.createTextNode(human(key)));
+    parent.appendChild(lab);
+  } else {
+    var row2 = document.createElement('label'); row2.className = 'row';
+    var s = document.createElement('span'); s.textContent = human(key);
+    row2.append(s, inp); parent.appendChild(row2);
+  }
+}
+
+function collect() {
+  var data = JSON.parse(JSON.stringify(current.data));
+  document.querySelectorAll('#editor [data-path]').forEach(function (el) {
+    var path = JSON.parse(el.dataset.path), v;
+    if (el.dataset.kind === 'bool') v = el.checked;
+    else if (el.dataset.kind === 'num') v = el.value === '' ? 0 : Number(el.value);
+    else if (el.dataset.kind === 'lines') v = el.value.split('\n').map(function (s) { return s.trim(); }).filter(Boolean);
+    else v = el.value;
+    var o = data; for (var i = 0; i < path.length - 1; i++) o = o[path[i]];
+    o[path[path.length - 1]] = v;
+  });
+  return data;
+}
+
+function mutate(path, fn) {
+  current.data = collect();
+  var o = current.data; path.forEach(function (p) { o = o[p]; });
+  fn(o); draw();
+}
+
+function draw() {
+  var f = document.getElementById('editor'); f.innerHTML = '';
+  document.getElementById('title').textContent = current.label;
+  Object.keys(current.data).forEach(function (k) { render(current.data[k], [k], k, f); });
+  document.querySelectorAll('aside nav a').forEach(function (a) {
+    if (a.dataset.name === current.name) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+  });
+}
+
+function openSection(name) {
+  showSite(true);
+  current = sections.filter(function (s) { return s.name === name; })[0];
+  document.getElementById('msg').textContent = '';
+  draw(); window.scrollTo(0, 0);
+}
+
+/* ---------- Sign-in (admin key, kept on this device) ---------- */
+function download(path, filename, inline) {
+  var w = inline ? window.open('', '_blank') : null;
+  return fetch(path).then(function (r) {
+    if (!r.ok) return r.json().then(function (j) { throw new Error(j.error || 'Could not make the file. Try again.'); });
+    var name = filename || ((r.headers.get('Content-Disposition') || '').match(/filename="([^"]+)"/) || [])[1] || 'download';
+    return r.blob().then(function (b) {
+      var u = URL.createObjectURL(b);
+      if (w) { w.location.href = u; return b; }
+      var a = document.createElement('a'); a.href = u; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(u); }, 60000);
+      return b;
+    });
+  }).catch(function (e) { if (w) w.close(); alertMsg(e.message); });
+}
+function alertMsg(text) {
+  var m = document.querySelector('#bizmain .msg[role=status]') || document.getElementById('msg');
+  if (m) { m.className = 'msg bad'; m.textContent = text; }
+}
+document.addEventListener('click', function (e) {
+  var a = e.target.closest && e.target.closest('a[data-dl]');
+  if (!a) return;
+  e.preventDefault(); download(a.dataset.dl, null, a.dataset.inline === '1');
+});
+
+function start() {
+  fetch('/api/data').then(function (r) {
+    if (r.status === 401) { BC.clearKey(); document.getElementById('login').style.display = 'grid'; document.getElementById('app').style.display = 'none'; return null; }
+    return r.json();
+  }).then(function (d) {
+    if (!d || !Array.isArray(d)) { if (d && d.error) { var er = document.getElementById('login-err'); er.textContent = d.error; er.hidden = false; } return; }
+    sections = d;
+    var nav = document.getElementById('nav'); nav.innerHTML = '';
+    d.filter(function (s) { return s.name !== 'reviews'; }).forEach(function (s) {
+      var a = document.createElement('a'); a.href = '#'; a.textContent = s.label; a.dataset.name = s.name;
+      a.onclick = function (e) { e.preventDefault(); openSection(s.name); };
+      nav.appendChild(a);
+    });
+    document.getElementById('login').style.display = 'none';
+    document.getElementById('app').style.display = 'grid';
+    bizView('overview');
+  });
+}
+
+document.getElementById('login-form').onsubmit = function (e) {
+  e.preventDefault();
+  var err = document.getElementById('login-err'); err.hidden = true;
+  var btn = e.target.querySelector('button'); btn.disabled = true; btn.textContent = 'Checking…';
+  BC.setKey(document.getElementById('k').value);
+  BC.checkKey().then(function (problem) {
+    btn.disabled = false; btn.textContent = 'Log in';
+    if (problem) { BC.clearKey(); err.textContent = problem; err.hidden = false; return; }
+    document.getElementById('k').value = ''; start();
+  });
+};
+
+document.getElementById('logout').onclick = function (e) {
+  e.preventDefault(); BC.clearKey(); localStorage.removeItem('bc-live-ops'); location.reload();
+};
+
+document.getElementById('save').onclick = function () {
+  var btn = this, msg = document.getElementById('msg');
+  current.data = collect();
+  btn.disabled = true; msg.className = 'msg'; msg.textContent = 'Publishing…';
+  fetch('/api/save', { method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ name: current.name, data: current.data }) })
+  .then(function (r) { return r.json().then(function (j) { return [r.ok, j]; }); })
+  .then(function (x) {
+    btn.disabled = false;
+    msg.className = 'msg ' + (x[0] ? 'ok' : 'bad');
+    msg.textContent = x[0] ? x[1].message : (x[1].error === 'login' ? 'You were logged out. Reload and log in again.' : x[1].error);
+  })
+  .catch(function () { btn.disabled = false; msg.className = 'msg bad'; msg.textContent = 'Could not reach the admin. Check your internet connection.'; });
+};
+
+if (BC.getKey()) start();
+</script>
+
+<script>
+/* ---------- Business: quotes, invoices, customers ---------- */
+var B = { settings: null, customers: [] };
+var bm = document.getElementById('bizmain');
+
+function showSite(on) {
+  document.getElementById('sitemain').hidden = !on;
+  document.getElementById('sitebar').style.display = on ? '' : 'none';
+  bm.hidden = on;
+}
+function navMark(view) {
+  document.querySelectorAll('aside nav a').forEach(function (a) {
+    if (a.dataset.view === view) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+  });
+}
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function gbp(n) { return '£' + Number(n || 0).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+function ukDate(iso) { if (!iso) return ''; var d = new Date(iso + 'T12:00:00'); return d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }); }
+function api(path, body) {
+  return fetch(path, body === undefined ? {} : { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) })
+    .then(function (r) { return r.json().then(function (j) {
+      if (r.status === 401) { location.reload(); throw new Error('login'); }
+      if (!r.ok) throw new Error(j.error || 'Something went wrong.'); return j; }); });
+}
+function statusBadge(d) {
+  var s = d.overdue ? 'overdue' : d.expired ? 'expired' : d.status;
+  return '<span class="badge ' + s + '">' + s.charAt(0).toUpperCase() + s.slice(1) + '</span>';
+}
+function loadBase() {
+  return Promise.all([api('/api/settings'), api('/api/customers')]).then(function (r) { B.settings = r[0]; B.customers = r[1]; });
+}
+
+function bizView(view, arg) {
+  bm.classList.remove('wide'); window.onmessage = null;
+  showSite(false); navMark(view === 'doc' ? arg.kind : view === 'customer' ? 'customers' : view === 'receipt' ? 'receipts' : view === 'post' ? 'blog' : view);
+  document.querySelector('aside').classList.remove('open');
+  window.scrollTo(0, 0);
+  loadBase().then(function () {
+    if (view === 'overview') return overview();
+    if (view === 'quote' || view === 'invoice') return docList(view);
+    if (view === 'doc') return docEditor(arg);
+    if (view === 'customers') return customerList();
+    if (view === 'customer') return customerEditor(arg);
+    if (view === 'settings') return settingsView();
+    if (view === 'mail') return mailView();
+    if (view === 'live') return liveEditor();
+    if (view === 'reviews') return reviewsView();
+    if (view === 'blog') return blogList();
+    if (view === 'post') return postEditor(arg);
+    if (view === 'receipts') return receiptList(arg);
+    if (view === 'receipt') return receiptEditor(arg);
+  }).catch(function (e) { if (e.message !== 'login') bm.innerHTML = '<p class="msg bad">' + esc(e.message) + '</p>'; });
+}
+document.querySelectorAll('#biznav a, #webnav a').forEach(function (a) {
+  a.onclick = function (e) { e.preventDefault(); bizView(a.dataset.view); };
+});
+
+/* Overview */
+function overview() {
+  Promise.all([api('/api/summary'), api('/api/docs?kind=invoice'), api('/api/docs?kind=quote')]).then(function (r) {
+    var s = r[0];
+    bm.innerHTML = '<div class="head"><h2>Overview</h2><div class="actions">' +
+      '<button class="btn" id="nq">New quote</button><button class="btn line" id="ni">New invoice</button></div></div>' +
+      '<div class="tiles">' +
+      '<div class="tile"><b>' + gbp(s.unpaid_total) + '</b><span>Waiting to be paid</span></div>' +
+      '<div class="tile' + (s.overdue_count ? ' warn' : '') + '"><b>' + gbp(s.overdue_total) + '</b><span>Overdue (' + s.overdue_count + ' invoice' + (s.overdue_count === 1 ? '' : 's') + ')</span></div>' +
+      '<div class="tile"><b>' + gbp(s.paid_this_month) + '</b><span>Paid this month</span></div>' +
+      '<div class="tile"><b>' + s.open_quotes + '</b><span>Open quotes, ' + gbp(s.open_quotes_value) + '</span></div></div>' +
+      '<h3>Recent invoices</h3>' + docTable(r[1].slice(0, 5), 'invoice') +
+      '<h3 style="margin-top:28px">Recent quotes</h3>' + docTable(r[2].slice(0, 5), 'quote');
+    document.getElementById('nq').onclick = function () { bizView('doc', { kind:'quote' }); };
+    document.getElementById('ni').onclick = function () { bizView('doc', { kind:'invoice' }); };
+    bindRows();
+  });
+}
+
+/* Quote / invoice list */
+function docTable(docs, kind) {
+  if (!docs.length) return '<div class="empty">No ' + kind + 's yet.</div>';
+  return '<table class="list"><thead><tr><th>Number</th><th>Customer</th><th>Job</th><th>Date</th><th>' +
+    (kind === 'invoice' ? 'Due' : 'Valid until') + '</th><th class="n">Total</th><th>Status</th></tr></thead><tbody>' +
+    docs.map(function (d) {
+      return '<tr data-id="' + d.id + '" data-kind="' + d.kind + '"><td><strong>' + esc(d.number) + '</strong></td><td>' + esc(d.customer_name) +
+        '</td><td>' + esc(d.title) + '</td><td>' + ukDate(d.issue_date) + '</td><td>' + ukDate(d.due_date) +
+        '</td><td class="n">' + gbp(d.total) + '</td><td>' + statusBadge(d) + '</td></tr>';
+    }).join('') + '</tbody></table>';
+}
+function bindRows() {
+  bm.querySelectorAll('tr[data-id]').forEach(function (tr) {
+    tr.onclick = function () {
+      if (tr.dataset.kind === 'customer') bizView('customer', { id: +tr.dataset.id });
+      else bizView('doc', { id: +tr.dataset.id, kind: tr.dataset.kind });
+    };
+  });
+}
+function docList(kind) {
+  api('/api/docs?kind=' + kind).then(function (docs) {
+    var name = kind === 'quote' ? 'Quotes' : 'Invoices';
+    bm.innerHTML = '<div class="head"><h2>' + name + '</h2><button class="btn" id="new">New ' + kind + '</button></div>' + docTable(docs, kind);
+    document.getElementById('new').onclick = function () { bizView('doc', { kind: kind }); };
+    bindRows();
+  });
+}
+
+/* Quote / invoice editor */
+function docEditor(arg) {
+  var p = arg.id ? api('/api/docs/' + arg.id) : Promise.resolve({
+    kind: arg.kind, customer_id: arg.customer_id || '', title: '', issue_date: new Date().toISOString().slice(0, 10), due_date: '',
+    status: arg.kind === 'quote' ? 'draft' : 'unpaid', vat_rate: B.settings.vat_registered ? B.settings.vat_rate : 0,
+    items: [{ description: '', qty: 1, unit_price: 0 }], notes: '', amount_paid: 0, paid_date: '' });
+  p.then(function (d) { drawDoc(d); });
+}
+
+function drawDoc(d) {
+  var isQ = d.kind === 'quote', label = isQ ? 'quote' : 'invoice';
+  var statuses = isQ ? ['draft', 'sent', 'accepted', 'declined'] : ['unpaid', 'paid', 'cancelled'];
+  var custOpts = '<option value="">Choose a customer…</option>' + B.customers.map(function (c) {
+    return '<option value="' + c.id + '"' + (c.id == d.customer_id ? ' selected' : '') + '>' + esc(c.name) + (c.postcode ? ' (' + esc(c.postcode) + ')' : '') + '</option>';
+  }).join('') + '<option value="new">+ Add a new customer</option>';
+  bm.innerHTML =
+    '<a href="#" class="back" id="back">← All ' + label + 's</a>' +
+    '<div class="head"><h2>' + (d.id ? (isQ ? 'Quote ' : 'Invoice ') + esc(d.number) : 'New ' + label) + '</h2>' + (d.id ? statusBadge(d) : '') + '</div>' +
+    '<form id="docf">' +
+    '<div class="card"><div class="two">' +
+      '<label class="row"><span>Customer</span><select id="d-cust">' + custOpts + '</select></label>' +
+      '<label class="row"><span>Job</span><input type="text" id="d-title" value="' + esc(d.title) + '" placeholder="e.g. Howdens kitchen supply and fit"></label>' +
+    '</div><div id="newcust" hidden class="card" style="background:var(--bg)"><strong>New customer</strong><div class="two">' +
+      '<label class="row"><span>Name</span><input type="text" id="nc-name"></label>' +
+      '<label class="row"><span>Phone</span><input type="text" id="nc-phone"></label>' +
+      '<label class="row"><span>Email</span><input type="email" id="nc-email"></label>' +
+      '<label class="row"><span>Postcode</span><input type="text" id="nc-postcode"></label></div>' +
+      '<label class="row"><span>Address</span><textarea id="nc-address" rows="2"></textarea></label></div>' +
+    '<div class="three">' +
+      '<label class="row"><span>Date</span><input type="date" id="d-issue" value="' + esc(d.issue_date) + '"></label>' +
+      '<label class="row"><span>' + (isQ ? 'Valid until' : 'Payment due') + '</span><input type="date" id="d-due" value="' + esc(d.due_date) + '"></label>' +
+      '<label class="row"><span>Status</span><select id="d-status">' + statuses.map(function (s) {
+        return '<option' + (s === d.status ? ' selected' : '') + ' value="' + s + '">' + s.charAt(0).toUpperCase() + s.slice(1) + '</option>'; }).join('') + '</select></label>' +
+    '</div>' + (d.due_date ? '' : '<p class="intro" style="margin:0">Leave the ' + (isQ ? 'valid-until' : 'due') + ' date empty to use ' +
+      (isQ ? B.settings.quote_valid_days + ' days' : B.settings.invoice_due_days + ' days') + ' from the date.</p>') + '</div>' +
+    '<div class="card"><table class="items-ed"><thead><tr><th style="width:55%">Description</th><th>Qty</th><th>Unit price (£)</th><th class="n">Amount</th><th></th></tr></thead>' +
+      '<tbody id="lines"></tbody></table>' +
+      '<p><button type="button" class="btn small line" id="addline">Add a line</button></p>' +
+      '<label class="chk"><input type="checkbox" id="d-vat"' + (d.vat_rate ? ' checked' : '') + '> Add VAT at <input type="number" id="d-vatrate" step="any" style="width:70px" value="' + (d.vat_rate || B.settings.vat_rate) + '">%</label>' +
+      '<div class="totals" id="totals"></div></div>' +
+    (isQ ? '' : '<div class="card"><div class="two">' +
+      '<label class="row"><span>Amount paid so far (£)</span><input type="number" step="any" id="d-paid" value="' + (d.amount_paid || 0) + '"></label>' +
+      '<label class="row"><span>Date paid</span><input type="date" id="d-paiddate" value="' + esc(d.paid_date) + '"></label></div>' +
+      '<p class="intro" style="margin:0">Set the status to Paid and the full amount is filled in for you.</p></div>') +
+    '<div class="card"><label class="row"><span>Notes for the customer</span><textarea id="d-notes" rows="4" placeholder="What is included, what is not, timings, deposit…">' + esc(d.notes) + '</textarea></label></div>' +
+    '<div class="actions"><button class="btn" type="submit">Save ' + label + '</button>' +
+      (d.id ? '<a class="btn line" href="#" data-dl="/api/pdf/' + d.id + '">Download PDF</a>' +
+        '<a class="btn line" href="#" data-dl="/api/pdf/' + d.id + '?inline=1" data-inline="1">Preview</a>' +
+        '<button class="btn line" type="button" id="email">Email with PDF</button>' +
+        '<button class="btn wa" type="button" id="wa">Send on WhatsApp</button>' +
+        (navigator.canShare ? '<button class="btn line" type="button" id="share">Share PDF</button>' : '') +
+        (isQ ? '<button class="btn line" type="button" id="toinv">Turn into invoice</button>' : '') +
+        '<button class="btn danger" type="button" id="del">Delete</button>' : '') +
+      '<p class="msg" id="dmsg" role="status"></p></div></form>';
+
+  var lines = document.getElementById('lines');
+  function addLine(it) {
+    var tr = document.createElement('tr');
+    tr.innerHTML = '<td><input type="text" class="l-desc" aria-label="Description"></td>' +
+      '<td><input type="number" step="any" class="l-qty" aria-label="Quantity" style="width:80px"></td>' +
+      '<td><input type="number" step="any" class="l-price" aria-label="Unit price" style="width:120px"></td>' +
+      '<td class="n amt"></td><td><button type="button" class="btn danger" aria-label="Remove line">✕</button></td>';
+    tr.querySelector('.l-desc').value = it.description || '';
+    tr.querySelector('.l-qty').value = it.qty == null ? 1 : it.qty;
+    tr.querySelector('.l-price').value = it.unit_price || '';
+    tr.querySelector('button').onclick = function () { tr.remove(); recalc(); };
+    lines.appendChild(tr);
+  }
+  function readItems() {
+    return Array.prototype.map.call(lines.querySelectorAll('tr'), function (tr) {
+      return { description: tr.querySelector('.l-desc').value, qty: +tr.querySelector('.l-qty').value || 0,
+               unit_price: +tr.querySelector('.l-price').value || 0 };
+    });
+  }
+  function vatRate() { return document.getElementById('d-vat').checked ? (+document.getElementById('d-vatrate').value || 0) : 0; }
+  function recalc() {
+    var sub = 0;
+    lines.querySelectorAll('tr').forEach(function (tr) {
+      var a = (+tr.querySelector('.l-qty').value || 0) * (+tr.querySelector('.l-price').value || 0);
+      tr.querySelector('.amt').textContent = gbp(a); sub += a;
+    });
+    var vr = vatRate(), vat = Math.round(sub * vr) / 100, tot = sub + vat;
+    var paid = d.kind === 'invoice' ? (+document.getElementById('d-paid').value || 0) : 0;
+    document.getElementById('totals').innerHTML = (vr ? '<div><span>Subtotal</span><span>' + gbp(sub) + '</span></div>' +
+      '<div><span>VAT at ' + vr + '%</span><span>' + gbp(vat) + '</span></div>' : '') +
+      '<div class="grand"><span>Total</span><span>' + gbp(tot) + '</span></div>' +
+      (paid ? '<div><span>Paid</span><span>−' + gbp(paid) + '</span></div><div class="grand"><span>Balance due</span><span>' + gbp(tot - paid) + '</span></div>' : '');
+  }
+  (d.items.length ? d.items : [{}]).forEach(addLine);
+  recalc();
+  bm.querySelector('#docf').addEventListener('input', recalc);
+  document.getElementById('addline').onclick = function () { addLine({ qty: 1 }); recalc(); lines.lastChild.querySelector('input').focus(); };
+  document.getElementById('back').onclick = function (e) { e.preventDefault(); bizView(d.kind); };
+  var cust = document.getElementById('d-cust');
+  cust.onchange = function () { document.getElementById('newcust').hidden = cust.value !== 'new'; if (cust.value === 'new') document.getElementById('nc-name').focus(); };
+
+  function msg(text, ok) { var m = document.getElementById('dmsg'); m.className = 'msg ' + (ok ? 'ok' : 'bad'); m.textContent = text; }
+
+  document.getElementById('docf').onsubmit = function (e) {
+    e.preventDefault();
+    var getCust = cust.value === 'new'
+      ? api('/api/customers', { name: v('nc-name'), phone: v('nc-phone'), email: v('nc-email'), postcode: v('nc-postcode'), address: v('nc-address') }).then(function (c) { return c.id; })
+      : Promise.resolve(cust.value);
+    getCust.then(function (cid) {
+      var body = { id: d.id, kind: d.kind, customer_id: cid, title: v('d-title'), issue_date: v('d-issue'), due_date: v('d-due'),
+        status: v('d-status'), vat_rate: vatRate(), items: readItems(), notes: v('d-notes') };
+      if (d.kind === 'invoice') { body.amount_paid = +v('d-paid') || 0; body.paid_date = v('d-paiddate'); }
+      return api('/api/docs', body);
+    }).then(function (saved) {
+      return loadBase().then(function () { drawDoc(saved); msg('Saved.', true); });
+    }).catch(function (err) { if (err.message !== 'login') msg(err.message); });
+  };
+  if (!d.id) return;
+  document.getElementById('del').onclick = function () {
+    var b = this;
+    if (b.dataset.sure) {
+      api('/api/docs/' + d.id + '/delete', {}).then(function () { bizView(d.kind); });
+    } else { b.dataset.sure = '1'; b.textContent = 'Click again to delete ' + d.number; }
+  };
+  if (isQ) document.getElementById('toinv').onclick = function () {
+    api('/api/docs/' + d.id + '/invoice', {}).then(function (inv) { bizView('doc', { id: inv.id, kind: 'invoice' }); })
+      .catch(function (err) { msg(err.message); });
+  };
+  document.getElementById('email').onclick = function () {
+    var box = document.getElementById('compose');
+    if (box) { box.remove(); return; }
+    api('/api/docs/' + d.id + '/email-preview').then(function (pv) {
+      box = document.createElement('div'); box.id = 'compose'; box.className = 'card compose';
+      box.innerHTML = '<h3 style="margin-top:0">Email ' + esc(d.number) + ' with the PDF attached</h3>' +
+        '<p class="intro">Check the message, then press the button. The PDF downloads and your email app opens with everything filled in. Attach the PDF and send.</p>' +
+        '<label class="row"><span>To</span><input type="email" id="m-to"></label>' +
+        '<label class="row"><span>Subject</span><input type="text" id="m-sub"></label>' +
+        '<label class="row"><span>Message</span><textarea id="m-body" rows="10"></textarea></label>' +
+        '<div class="actions">' + (pv.configured ? '<button class="btn" type="button" id="m-send">Send email</button>' : '') +
+        '<button class="btn line" type="button" id="m-app">Open in my email app</button><p class="msg" id="m-msg" role="status"></p></div>';
+      bm.querySelector('.actions').after(box);
+      document.getElementById('m-to').value = pv.to || '';
+      document.getElementById('m-sub').value = pv.subject;
+      document.getElementById('m-body').value = pv.body;
+      var mm = document.getElementById('m-msg');
+      document.getElementById('m-app').onclick = function () {
+        download('/api/pdf/' + d.id);
+        setTimeout(function () {
+          location.href = 'mailto:' + encodeURIComponent(v('m-to')) + '?subject=' + encodeURIComponent(v('m-sub')) + '&body=' + encodeURIComponent(document.getElementById('m-body').value);
+        }, 800);
+        mm.className = 'msg ok'; mm.textContent = 'The PDF has downloaded. Attach it to the email that opened.';
+        if (isQ) api('/api/docs/' + d.id + '/sent', {}).catch(function () {});
+      };
+      var send = document.getElementById('m-send');
+      if (send) send.onclick = function () {
+        send.disabled = true; mm.className = 'msg'; mm.textContent = 'Sending…';
+        api('/api/docs/' + d.id + '/email', { to: v('m-to'), subject: v('m-sub'), body: document.getElementById('m-body').value })
+          .then(function (r) { send.disabled = false; mm.className = 'msg ok'; mm.textContent = r.message; })
+          .catch(function (err) { send.disabled = false; mm.className = 'msg bad'; mm.textContent = err.message; });
+      };
+      box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }).catch(function (err) { msg(err.message); });
+  };
+  var shareBtn = document.getElementById('share');
+  if (shareBtn) shareBtn.onclick = function () {
+    msg('Making the PDF…', true);
+    fetch('/api/pdf/' + d.id).then(function (r) {
+      var name = ((r.headers.get('Content-Disposition') || '').match(/filename="([^"]+)"/) || [])[1] || (d.number + '.pdf');
+      return r.blob().then(function (b) { return new File([b], name, { type: 'application/pdf' }); });
+    }).then(function (file) {
+      if (!navigator.canShare({ files: [file] })) throw new Error("This device can't share files. Use Download PDF instead.");
+      return navigator.share({ files: [file], title: file.name }).then(function () { msg('Shared.', true); if (isQ) api('/api/docs/' + d.id + '/sent', {}).catch(function () {}); });
+    }).catch(function (err) { if (err.name !== 'AbortError') msg(err.message); else msg(''); });
+  };
+  document.getElementById('wa').onclick = function () {
+    api('/api/docs/' + d.id + '/whatsapp', {}).then(function (r) {
+      window.open(r.url, '_blank', 'noopener');
+      msg('WhatsApp opened with the message ready.' + (navigator.canShare ? ' To send the PDF too, use Share PDF and pick WhatsApp.' : ' To send the PDF too, download it and attach it in WhatsApp.'), true);
+    }).catch(function (err) { msg(err.message); });
+  };
+}
+function v(id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; }
+
+/* Customers */
+function customerList() {
+  var cs = B.customers;
+  bm.innerHTML = '<div class="head"><h2>Customers</h2><button class="btn" id="new">Add a customer</button></div>' +
+    (cs.length ? '<table class="list"><thead><tr><th>Name</th><th>Phone</th><th>Email</th><th>Postcode</th><th class="n">Quotes</th><th class="n">Invoices</th></tr></thead><tbody>' +
+      cs.map(function (c) {
+        return '<tr data-id="' + c.id + '" data-kind="customer"><td><strong>' + esc(c.name) + '</strong></td><td>' + esc(c.phone) + '</td><td>' + esc(c.email) +
+          '</td><td>' + esc(c.postcode) + '</td><td class="n">' + c.quotes + '</td><td class="n">' + c.invoices + '</td></tr>';
+      }).join('') + '</tbody></table>' : '<div class="empty">No customers yet. Add one here, or while writing a quote.</div>');
+  document.getElementById('new').onclick = function () { bizView('customer', {}); };
+  bindRows();
+}
+function customerEditor(arg) {
+  var c = B.customers.filter(function (x) { return x.id === arg.id; })[0] || { name:'', phone:'', email:'', address:'', postcode:'', notes:'' };
+  bm.innerHTML = '<a href="#" class="back" id="back">← All customers</a><div class="head"><h2>' + (c.id ? esc(c.name) : 'New customer') + '</h2></div>' +
+    '<form id="cf" class="card"><div class="two">' +
+    '<label class="row"><span>Name</span><input type="text" id="c-name" required></label>' +
+    '<label class="row"><span>Phone</span><input type="text" id="c-phone"></label>' +
+    '<label class="row"><span>Email</span><input type="email" id="c-email"></label>' +
+    '<label class="row"><span>Postcode</span><input type="text" id="c-postcode"></label></div>' +
+    '<label class="row"><span>Address</span><textarea id="c-address" rows="3"></textarea></label>' +
+    '<label class="row"><span>Notes (only you see these)</span><textarea id="c-notes" rows="3"></textarea></label>' +
+    '<div class="actions"><button class="btn" type="submit">Save customer</button>' +
+    (c.id ? '<button class="btn line" type="button" id="cq">New quote for them</button><button class="btn line" type="button" id="ci">New invoice for them</button>' +
+      '<button class="btn danger" type="button" id="cdel">Delete</button>' : '') +
+    '<p class="msg" id="cmsg" role="status"></p></div></form><div id="cdocs"></div>';
+  ['name', 'phone', 'email', 'postcode', 'address', 'notes'].forEach(function (k) { document.getElementById('c-' + k).value = c[k] || ''; });
+  document.getElementById('back').onclick = function (e) { e.preventDefault(); bizView('customers'); };
+  var m = document.getElementById('cmsg');
+  document.getElementById('cf').onsubmit = function (e) {
+    e.preventDefault();
+    api('/api/customers', { id: c.id, name: v('c-name'), phone: v('c-phone'), email: v('c-email'), postcode: v('c-postcode'),
+      address: v('c-address'), notes: v('c-notes') })
+      .then(function (saved) { return loadBase().then(function () { customerEditor({ id: saved.id }); var mm = document.getElementById('cmsg'); mm.className = 'msg ok'; mm.textContent = 'Saved.'; }); })
+      .catch(function (err) { m.className = 'msg bad'; m.textContent = err.message; });
+  };
+  if (!c.id) return;
+  document.getElementById('cq').onclick = function () { bizView('doc', { kind:'quote', customer_id: c.id }); };
+  document.getElementById('ci').onclick = function () { bizView('doc', { kind:'invoice', customer_id: c.id }); };
+  document.getElementById('cdel').onclick = function () {
+    var b = this;
+    if (!b.dataset.sure) { b.dataset.sure = '1'; b.textContent = 'Click again to delete ' + c.name; return; }
+    api('/api/customers/' + c.id + '/delete', {}).then(function () { bizView('customers'); })
+      .catch(function (err) { m.className = 'msg bad'; m.textContent = err.message; });
+  };
+  Promise.all([api('/api/docs?kind=quote'), api('/api/docs?kind=invoice')]).then(function (r) {
+    var mine = function (d) { return d.customer_id === c.id; };
+    document.getElementById('cdocs').innerHTML = '<h3>Quotes</h3>' + docTable(r[0].filter(mine), 'quote') +
+      '<h3 style="margin-top:24px">Invoices</h3>' + docTable(r[1].filter(mine), 'invoice');
+    bindRows();
+  });
+}
+
+/* Business settings */
+function settingsView() {
+  var s = B.settings;
+  var groups = [
+    ['Your business', [['business_name','Business name'],['owner_name','Your name'],['address','Address shown on quotes and invoices','area'],
+      ['phone','Phone'],['email','Email'],['website','Website']]],
+    ['VAT', [['vat_registered','VAT registered (add VAT to new quotes and invoices)','bool'],['vat_number','VAT number'],['vat_rate','VAT rate (%)','num']]],
+    ['Bank details for invoices', [['bank_name','Bank'],['account_name','Account name'],['sort_code','Sort code'],['account_number','Account number']]],
+    ['Numbering and terms', [['quote_prefix','Quote number starts with'],['next_quote_number','Next quote number','num'],
+      ['invoice_prefix','Invoice number starts with'],['next_invoice_number','Next invoice number','num'],
+      ['quote_valid_days','Quotes valid for (days)','num'],['invoice_due_days','Invoices due after (days)','num'],
+      ['quote_footer','Small print on quotes','area'],['invoice_footer','Small print on invoices','area']]]
+  ];
+  bm.innerHTML = '<div class="head"><h2>Business settings</h2></div><form id="sf">' + groups.map(function (g) {
+    return '<div class="card"><h3 style="margin-top:0">' + g[0] + '</h3>' + g[1].map(function (f) {
+      var k = f[0], val = s[k];
+      if (f[2] === 'bool') return '<label class="chk"><input type="checkbox" data-k="' + k + '" data-t="bool"' + (val ? ' checked' : '') + '> ' + f[1] + '</label>';
+      if (f[2] === 'area') return '<label class="row"><span>' + f[1] + '</span><textarea data-k="' + k + '" rows="2">' + esc(val) + '</textarea></label>';
+      return '<label class="row"><span>' + f[1] + '</span><input type="' + (f[2] === 'num' ? 'number' : 'text') + '" step="any" data-k="' + k + '"' +
+        (f[2] === 'num' ? ' data-t="num"' : '') + ' value="' + esc(val) + '"></label>';
+    }).join('') + '</div>';
+  }).join('') + '<div class="actions"><button class="btn" type="submit">Save settings</button><p class="msg" id="smsg" role="status"></p></div></form>';
+  document.getElementById('sf').onsubmit = function (e) {
+    e.preventDefault();
+    var out = {};
+    bm.querySelectorAll('[data-k]').forEach(function (el) {
+      out[el.dataset.k] = el.dataset.t === 'bool' ? el.checked : el.dataset.t === 'num' ? +el.value : el.value;
+    });
+    var m = document.getElementById('smsg');
+    api('/api/settings', out).then(function (ns) { B.settings = ns; m.className = 'msg ok'; m.textContent = 'Saved.'; })
+      .catch(function (err) { m.className = 'msg bad'; m.textContent = err.message; });
+  };
+}
+/* Mobile menu */
+document.getElementById('menubtn').onclick = function () {
+  var a = document.querySelector('aside'), open = a.classList.toggle('open');
+  this.setAttribute('aria-expanded', open ? 'true' : 'false'); this.textContent = open ? 'Close' : 'Menu';
+};
+document.getElementById('nav').addEventListener('click', function () {
+  document.querySelector('aside').classList.remove('open'); document.getElementById('menubtn').textContent = 'Menu';
+});
+
+/* Mail and WhatsApp settings */
+function mailView() {
+  var s = B.settings;
+  var tags = '<p class="intro" style="margin:4px 0 0">You can use: {first_name} {name} {number} {job} {for_job} {total} {balance} {due} {owner} {business} {phone}' +
+    ' and {bank_line} (your bank details, on invoices).</p>';
+  bm.innerHTML = '<div class="head"><h2>Message wording</h2></div><form id="mf">' +
+    '<p class="intro">This is the wording used when you email or WhatsApp a quote or invoice. Emails open in your own email app, so they come from your normal address.</p>' +
+    '<div class="card"><h3 style="margin-top:0">Quote email</h3>' +
+      '<label class="row"><span>Subject</span><input type="text" data-k="quote_email_subject"></label>' +
+      '<label class="row"><span>Message</span><textarea data-k="quote_email_body" rows="8"></textarea></label></div>' +
+    '<div class="card"><h3 style="margin-top:0">Invoice email</h3>' +
+      '<label class="row"><span>Subject</span><input type="text" data-k="invoice_email_subject"></label>' +
+      '<label class="row"><span>Message</span><textarea data-k="invoice_email_body" rows="8"></textarea></label></div>' +
+    '<div class="card"><h3 style="margin-top:0">WhatsApp messages</h3>' +
+      '<p class="intro">The "Send on WhatsApp" button opens WhatsApp on your phone or computer with this message ready to send to the customer\'s mobile.</p>' +
+      '<label class="row"><span>Quote message</span><textarea data-k="whatsapp_quote" rows="4"></textarea></label>' +
+      '<label class="row"><span>Invoice message</span><textarea data-k="whatsapp_invoice" rows="4"></textarea></label>' + tags + '</div>' +
+    '<div class="actions"><button class="btn" type="submit">Save</button>' +
+    '<p class="msg" id="smsg" role="status"></p></div></form>';
+  bm.querySelectorAll('[data-k]').forEach(function (el) {
+    var val = s[el.dataset.k];
+    if (el.dataset.t === 'bool') el.checked = !!val; else el.value = val == null ? '' : val;
+  });
+  var m = document.getElementById('smsg');
+  function save() {
+    var out = {};
+    bm.querySelectorAll('[data-k]').forEach(function (el) {
+      out[el.dataset.k] = el.dataset.t === 'bool' ? el.checked : el.dataset.t === 'num' ? +el.value : el.value;
+    });
+    return api('/api/settings', out).then(function (ns) { B.settings = ns; });
+  }
+  document.getElementById('mf').onsubmit = function (e) {
+    e.preventDefault();
+    save().then(function () { m.className = 'msg ok'; m.textContent = 'Saved.'; })
+      .catch(function (err) { m.className = 'msg bad'; m.textContent = err.message; });
+  };
+}
+
+/* Receipts */
+function thisMonth() { return new Date().toISOString().slice(0, 7); }
+function receiptList(arg) {
+  var month = (arg && arg.month !== undefined) ? arg.month : thisMonth();
+  api('/api/receipts?month=' + month).then(function (rs) {
+    var total = 0, vat = 0, byCat = {};
+    rs.forEach(function (r) { total += r.amount; vat += r.vat; byCat[r.category] = (byCat[r.category] || 0) + r.amount; });
+    var months = [''];
+    for (var i = 0; i < 18; i++) { var dt = new Date(); dt.setDate(1); dt.setMonth(dt.getMonth() - i); months.push(dt.toISOString().slice(0, 7)); }
+    bm.innerHTML = '<div class="head"><h2>Receipts</h2><button class="btn" id="scan">Scan a receipt</button></div>' +
+      '<div class="actions" style="margin-bottom:16px"><label>Show <select id="month" style="width:auto">' + months.map(function (mo) {
+        var lab = mo ? new Date(mo + '-15').toLocaleDateString('en-GB', { month:'long', year:'numeric' }) : 'All receipts';
+        return '<option value="' + mo + '"' + (mo === month ? ' selected' : '') + '>' + lab + '</option>'; }).join('') + '</select></label>' +
+      '<a class="btn line small" href="#" data-dl="/api/receipts.csv?month=' + month + '">Download for my accountant (CSV)</a></div>' +
+      '<div class="tiles"><div class="tile"><b>' + gbp(total) + '</b><span>Spent</span></div>' +
+      '<div class="tile"><b>' + gbp(vat) + '</b><span>VAT paid</span></div>' +
+      '<div class="tile"><b>' + rs.length + '</b><span>Receipts</span></div></div>' +
+      (rs.length ? '<table class="list"><thead><tr><th></th><th>Date</th><th>Supplier</th><th>Category</th><th class="n">Amount</th></tr></thead><tbody>' +
+        rs.map(function (r) {
+          return '<tr data-rid="' + r.id + '"><td>' + (r.image_url ? '<img class="thumb" alt="" src="' + esc(r.image_url) + '">' : '') + '</td><td>' + ukDate(r.date) +
+            '</td><td><strong>' + esc(r.supplier || '—') + '</strong>' + (r.customer_name ? '<br><small>' + esc(r.customer_name) + '</small>' : '') +
+            '</td><td>' + esc(r.category) + '</td><td class="n">' + gbp(r.amount) + '</td></tr>';
+        }).join('') + '</tbody></table>' : '<div class="empty">No receipts for this period. Press <strong>Scan a receipt</strong> to take a photo of one.</div>');
+    document.getElementById('scan').onclick = function () { bizView('receipt', {}); };
+    document.getElementById('month').onchange = function () { bizView('receipts', { month: this.value }); };
+    bm.querySelectorAll('tr[data-rid]').forEach(function (tr) {
+      tr.onclick = function () { var r = rs.filter(function (x) { return x.id == tr.dataset.rid; })[0]; bizView('receipt', { r: r }); };
+    });
+  });
+}
+
+function shrinkPhoto(file) {
+  return new Promise(function (resolve, reject) {
+    var img = new Image(), url = URL.createObjectURL(file);
+    img.onload = function () {
+      var max = 1800, w = img.naturalWidth, h = img.naturalHeight, k = Math.min(1, max / Math.max(w, h));
+      var c = document.createElement('canvas'); c.width = Math.round(w * k); c.height = Math.round(h * k);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url); resolve(c.toDataURL('image/jpeg', 0.82));
+    };
+    img.onerror = function () { reject(new Error('That photo couldn\'t be read. Try taking it again.')); };
+    img.src = url;
+  });
+}
+
+function receiptEditor(arg) {
+  var r = arg.r || { date: new Date().toISOString().slice(0, 10), supplier:'', category:'Materials', amount:'', vat:'', paid_by:'', notes:'', customer_id:'' };
+  var cats = B.settings.receipt_categories, photo = null;
+  bm.innerHTML = '<a href="#" class="back" id="back">← All receipts</a><div class="head"><h2>' + (r.id ? 'Receipt' : 'Scan a receipt') + '</h2></div>' +
+    '<form id="rf"><div class="card">' +
+    '<label class="snap"><input type="file" accept="image/*" capture="environment" id="r-photo">' + (r.image ? 'Take a new photo' : 'Take a photo of the receipt') + '</label>' +
+    '<img class="rimg" id="r-prev" alt="Receipt photo" ' + (r.image_url ? 'src="' + esc(r.image_url) + '"' : 'hidden') + '>' +
+    '</div><div class="card"><div class="two">' +
+      '<label class="row"><span>Date</span><input type="date" id="r-date"></label>' +
+      '<label class="row"><span>Shop or supplier</span><input type="text" id="r-supplier" placeholder="e.g. Screwfix, Howdens, Shell" list="suppliers"></label>' +
+      '<label class="row"><span>Total paid (£, including VAT)</span><input type="number" step="0.01" inputmode="decimal" id="r-amount"></label>' +
+      '<label class="row"><span>VAT on the receipt (£)</span><input type="number" step="0.01" inputmode="decimal" id="r-vat"></label>' +
+      '<label class="row"><span>Category</span><select id="r-cat">' + cats.map(function (c) { return '<option>' + esc(c) + '</option>'; }).join('') + '</select></label>' +
+      '<label class="row"><span>Paid with</span><select id="r-paid"><option value="">—</option><option>Business card</option><option>Personal card</option><option>Cash</option><option>Bank transfer</option><option>Trade account</option></select></label>' +
+    '</div><label class="row"><span>Which job? (optional)</span><select id="r-cust"><option value="">Not for a particular customer</option>' +
+      B.customers.map(function (c) { return '<option value="' + c.id + '">' + esc(c.name) + '</option>'; }).join('') + '</select></label>' +
+    '<label class="row"><span>Notes</span><textarea id="r-notes" rows="2"></textarea></label>' +
+    '<p class="intro" style="margin:0"><a href="#" id="r-vat20">Work out VAT at 20% from the total</a></p></div>' +
+    '<div class="actions"><button class="btn" type="submit">Save receipt</button>' + (r.id ? '<button class="btn danger" type="button" id="r-del">Delete</button>' : '') +
+    '<p class="msg" id="r-msg" role="status"></p></div></form>' +
+    '<datalist id="suppliers"><option>Screwfix</option><option>Toolstation</option><option>Howdens</option><option>Travis Perkins</option><option>Jewson</option>' +
+    '<option>B&amp;Q</option><option>Wickes</option><option>CEF</option><option>Edmundson Electrical</option><option>Wolseley</option><option>Shell</option><option>BP</option><option>Esso</option></datalist>';
+  document.getElementById('r-date').value = r.date; document.getElementById('r-supplier').value = r.supplier;
+  document.getElementById('r-amount').value = r.amount; document.getElementById('r-vat').value = r.vat || '';
+  document.getElementById('r-cat').value = r.category; document.getElementById('r-paid').value = r.paid_by || '';
+  document.getElementById('r-cust').value = r.customer_id || ''; document.getElementById('r-notes').value = r.notes;
+  document.getElementById('back').onclick = function (e) { e.preventDefault(); bizView('receipts'); };
+  var m = document.getElementById('r-msg');
+  document.getElementById('r-photo').onchange = function () {
+    if (!this.files[0]) return;
+    m.className = 'msg'; m.textContent = 'Getting the photo ready…';
+    shrinkPhoto(this.files[0]).then(function (data) {
+      photo = data; var pv = document.getElementById('r-prev'); pv.src = data; pv.hidden = false;
+      m.textContent = ''; document.getElementById('r-amount').focus();
+    }).catch(function (err) { m.className = 'msg bad'; m.textContent = err.message; });
+  };
+  document.getElementById('r-vat20').onclick = function (e) {
+    e.preventDefault(); var a = +document.getElementById('r-amount').value || 0;
+    document.getElementById('r-vat').value = (Math.round(a / 6 * 100) / 100).toFixed(2);
+  };
+  document.getElementById('rf').onsubmit = function (e) {
+    e.preventDefault();
+    var b = bm.querySelector('#rf button[type=submit]'); b.disabled = true; m.className = 'msg'; m.textContent = 'Saving…';
+    api('/api/receipts', { id: r.id, date: v('r-date'), supplier: v('r-supplier'), amount: v('r-amount'), vat: v('r-vat'),
+      category: v('r-cat'), paid_by: v('r-paid'), customer_id: v('r-cust'), notes: v('r-notes'), image_data: photo })
+      .then(function (saved) { bizView('receipts', { month: saved.date.slice(0, 7) }); })
+      .catch(function (err) { b.disabled = false; m.className = 'msg bad'; m.textContent = err.message; });
+  };
+  if (r.id) document.getElementById('r-del').onclick = function () {
+    var b = this;
+    if (!b.dataset.sure) { b.dataset.sure = '1'; b.textContent = 'Click again to delete this receipt'; return; }
+    api('/api/receipts/' + r.id + '/delete', {}).then(function () { bizView('receipts'); });
+  };
+}
+/* Live editor: edit the real page in place, then publish */
+var LIVE = { device: 'desktop' };
+function liveOps() { try { return JSON.parse(localStorage.getItem('bc-live-ops') || '[]'); } catch (e) { return []; } }
+function saveOps(ops) {
+  try { localStorage.setItem('bc-live-ops', JSON.stringify(ops)); return true; }
+  catch (e) { return false; }
+}
+function liveEditor() {
+  bm.classList.add('wide');
+  bm.innerHTML = '<div class="head"><h2>Live editor</h2><div class="actions">' +
+    '<span class="seg"><button type="button" data-dev="desktop">Computer</button><button type="button" data-dev="phone">Phone</button></span>' +
+    '<span class="pending" id="lv-pending"></span>' +
+    '<button class="btn line small" type="button" id="lv-discard">Throw away changes</button>' +
+    '<button class="btn" type="button" id="lv-publish">Publish changes</button></div></div>' +
+    '<p class="msg" id="lv-msg" role="status"></p>' +
+    '<div class="live"><div class="frame-wrap" id="lv-wrap"><iframe id="lv-frame" title="Your website" src="/?edit=' + Date.now() + '"></iframe></div>' +
+    '<div class="panel" id="lv-panel"><h3 style="margin-top:0">Edit the website</h3>' +
+    '<p class="intro"><strong>Text:</strong> click any heading or paragraph, type, then press Enter.</p>' +
+    '<p class="intro"><strong>Photos:</strong> click any photo to swap it.</p>' +
+    '<p class="intro" style="margin:0">Changes show here straight away. The real website only changes when you press <strong>Publish changes</strong>, and updates about 2 minutes later.</p></div></div>';
+  var frame = document.getElementById('lv-frame'), m = document.getElementById('lv-msg');
+  function say(text, ok) { m.className = 'msg ' + (ok === undefined ? '' : ok ? 'ok' : 'bad'); m.textContent = text; }
+  function setDev(dev) {
+    LIVE.device = dev; document.getElementById('lv-wrap').classList.toggle('phone', dev === 'phone');
+    bm.querySelectorAll('[data-dev]').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.dev === dev ? 'true' : 'false'); });
+  }
+  bm.querySelectorAll('[data-dev]').forEach(function (b) { b.onclick = function () { setDev(b.dataset.dev); }; });
+  setDev(LIVE.device);
+  function refreshPending() {
+    var n = liveOps().length;
+    document.getElementById('lv-pending').textContent = n ? n + ' unpublished change' + (n === 1 ? '' : 's') : '';
+  }
+  refreshPending();
+  function post(msgObj) { if (frame.contentWindow) frame.contentWindow.postMessage(msgObj, location.origin); }
+  function addOp(op) {
+    var ops = liveOps(); ops.push(op);
+    if (!saveOps(ops)) { say('Too many unpublished photos. Publish your changes, then carry on.', false); return false; }
+    refreshPending(); return true;
+  }
+  frame.addEventListener('load', function () {
+    try {
+      var doc = frame.contentDocument;
+      var sc = doc.createElement('script'); sc.src = '/admin/editor-inject.js?v=' + (window.BC_VERSION || '1');
+      doc.body.appendChild(sc);
+    } catch (e) { say('The preview could not be opened for editing. Reload this page.', false); }
+  });
+
+  window.onmessage = function (e) {
+    if (e.origin !== location.origin || !e.data) return;
+    if (e.data.type === 'bc-ready') {
+      api('/api/visual/texts').then(function (list) { post({ type: 'bc-texts', list: list, ops: liveOps() }); });
+      return;
+    }
+    if (e.data.type === 'bc-editing') return say('Type your change, then press Enter to keep it (Esc to cancel).');
+    if (e.data.type === 'bc-text') {
+      if (addOp({ type: 'text', old: e.data.old, new: e.data.text })) say('Changed. Press Publish changes when you\'re happy.', true);
+      return;
+    }
+    if (e.data.type !== 'bc-pick') return;
+    var src = e.data.src, panel = document.getElementById('lv-panel'), photo = null;
+    api('/api/visual/info?src=' + encodeURIComponent(src)).then(function (info) {
+      if (!info.editable) {
+        panel.innerHTML = '<h3 style="margin-top:0">Change a photo</h3><p class="note">This picture is part of the design, so it can\'t be swapped here.</p>';
+        return;
+      }
+      panel.innerHTML = '<h3 style="margin-top:0">Change this photo</h3><img id="lv-img" alt="" src="' + esc(src) + '">' +
+        '<label class="snap"><input type="file" accept="image/*" id="lv-file">Choose a new photo</label>' +
+        '<label class="row"><span>Describe the photo (for Google and screen readers)</span><textarea id="lv-alt" rows="3"></textarea></label>' +
+        '<div class="actions"><button class="btn" type="button" id="lv-use" disabled>Use this photo</button>' +
+        '<button class="btn line small" type="button" id="lv-alt-only">Save description only</button></div>' +
+        '<p class="msg" id="lv-pmsg" role="status"></p>';
+      document.getElementById('lv-alt').value = info.alt || e.data.alt || '';
+      var pm = document.getElementById('lv-pmsg'), use = document.getElementById('lv-use');
+      document.getElementById('lv-file').onchange = function () {
+        if (!this.files[0]) return;
+        pm.className = 'msg'; pm.textContent = 'Getting the photo ready…';
+        shrinkPhoto(this.files[0]).then(function (data) {
+          photo = data; document.getElementById('lv-img').src = data; use.disabled = false;
+          pm.textContent = 'Looks right? Press "Use this photo".';
+        }).catch(function (err) { pm.className = 'msg bad'; pm.textContent = err.message; });
+      };
+      use.onclick = function () {
+        if (!addOp({ type: 'image', src: src, image_data: photo, alt: v('lv-alt') })) return;
+        post({ type: 'bc-setimg', src: src, data: photo });
+        pm.className = 'msg ok'; pm.textContent = 'Done. Press Publish changes when you\'re happy.'; use.disabled = true;
+      };
+      document.getElementById('lv-alt-only').onclick = function () {
+        if (addOp({ type: 'image', src: src, image_data: null, alt: v('lv-alt') })) { pm.className = 'msg ok'; pm.textContent = 'Description saved. Press Publish changes.'; }
+      };
+    });
+  };
+  document.getElementById('lv-publish').onclick = function () {
+    var b = this, ops = liveOps();
+    if (!ops.length) return say('Nothing to publish yet. Click some text or a photo to change it.');
+    b.disabled = true; say('Publishing…');
+    api('/api/visual/publish', { ops: ops }).then(function (r) {
+      saveOps([]); b.disabled = false; refreshPending(); reloadSections(); say(r.message, true);
+    }).catch(function (err) { b.disabled = false; say(err.message, false); });
+  };
+  document.getElementById('lv-discard').onclick = function () {
+    var b = this;
+    if (!b.dataset.sure) { b.dataset.sure = '1'; b.textContent = 'Click again to throw away unpublished changes'; return; }
+    saveOps([]); delete b.dataset.sure; b.textContent = 'Throw away changes'; refreshPending();
+    frame.src = '/?edit=' + Date.now(); say('Changes thrown away.', true);
+  };
+}
+function reloadSections() {
+  return fetch('/api/data').then(function (r) { return r.json(); }).then(function (d) { if (Array.isArray(d)) sections = d; });
+}
+
+/* Reviews */
+function reviewsView() {
+  reloadSections().then(function () {
+    var sec = sections.filter(function (s) { return s.name === 'reviews'; })[0];
+    var data = JSON.parse(JSON.stringify(sec.data));
+    data.reviews = data.reviews || [];
+    function stars(n) { var s = ''; for (var i = 1; i <= 5; i++) s += i <= n ? '★' : '☆'; return s; }
+    function draw(editIndex) {
+      var r = editIndex === undefined ? null : (editIndex === -1 ? { name:'', area:'', job:'', rating:5, text:'' } : data.reviews[editIndex]);
+      bm.innerHTML = '<div class="head"><h2>Reviews</h2>' + (r ? '' : '<button class="btn" id="rv-add">Add a review</button>') + '</div>' +
+        '<p class="note">Only add real reviews from real customers, ideally copied from Google, Facebook or Checkatrade, or from a message they sent you. ' +
+        'Ask them if it\'s OK to use their first name and town. Made-up reviews are illegal in the UK.</p>' +
+        (r ? '<form class="card" id="rv-form"><h3 style="margin-top:0">' + (editIndex === -1 ? 'New review' : 'Edit review') + '</h3><div class="two">' +
+          '<label class="row"><span>Customer name (e.g. Sarah T.)</span><input type="text" id="rv-name" required></label>' +
+          '<label class="row"><span>Town</span><input type="text" id="rv-area" placeholder="e.g. Birstall"></label>' +
+          '<label class="row"><span>Job</span><input type="text" id="rv-job" placeholder="e.g. Howdens kitchen fit"></label>' +
+          '<label class="row"><span>Stars</span><select id="rv-rating"><option value="5">★★★★★ 5</option><option value="4">★★★★☆ 4</option>' +
+          '<option value="3">★★★☆☆ 3</option><option value="2">★★☆☆☆ 2</option><option value="1">★☆☆☆☆ 1</option></select></label></div>' +
+          '<label class="row"><span>What they said</span><textarea id="rv-text" rows="5" required></textarea></label>' +
+          '<div class="actions"><button class="btn" type="submit">Save and publish</button><button class="btn line" type="button" id="rv-cancel">Cancel</button>' +
+          '<p class="msg" id="rv-msg" role="status"></p></div></form>' : '') +
+        (r ? '' : (data.reviews.length ? data.reviews.map(function (x, i) {
+          return '<div class="rv"><div class="item-head"><span class="st" aria-label="' + x.rating + ' stars">' + stars(x.rating || 5) + '</span>' +
+            '<span><button class="btn small line" data-edit="' + i + '">Edit</button> ' +
+            (i > 0 ? '<button class="btn small line" data-up="' + i + '" aria-label="Move up">↑</button> ' : '') +
+            '<button class="btn danger" data-del="' + i + '">Remove</button></span></div>' +
+            '<p>' + esc(x.text) + '</p><small><strong>' + esc(x.name) + '</strong>' + (x.area ? ', ' + esc(x.area) : '') + (x.job ? ' · ' + esc(x.job) : '') + '</small></div>';
+        }).join('') : '<div class="empty">No reviews yet. The reviews section stays hidden on the website until you add your first one.</div>') +
+        '<form class="card" id="rv-settings" style="margin-top:20px"><h3 style="margin-top:0">Section settings</h3>' +
+          '<label class="chk"><input type="checkbox" id="rv-on"> Show reviews on the website</label>' +
+          '<label class="row"><span>Heading</span><input type="text" id="rv-heading"></label>' +
+          '<label class="row"><span>Intro line</span><input type="text" id="rv-intro"></label>' +
+          '<label class="row"><span>Link to your Google reviews (optional)</span><input type="text" id="rv-google" placeholder="https://g.page/r/..."></label>' +
+          '<div class="actions"><button class="btn" type="submit">Save and publish</button><p class="msg" id="rv-smsg" role="status"></p></div></form>');
+      function publish(msgId) {
+        var mm = document.getElementById(msgId); mm.className = 'msg'; mm.textContent = 'Publishing…';
+        return fetch('/api/save', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ name:'reviews', data: data }) })
+          .then(function (res) { return res.json().then(function (j) { if (!res.ok) throw new Error(j.error || 'Could not save.'); return j; }); })
+          .then(function (j) { return j; });
+      }
+      if (r) {
+        document.getElementById('rv-name').value = r.name; document.getElementById('rv-area').value = r.area || '';
+        document.getElementById('rv-job').value = r.job || ''; document.getElementById('rv-rating').value = String(r.rating || 5);
+        document.getElementById('rv-text').value = r.text;
+        document.getElementById('rv-cancel').onclick = function () { draw(); };
+        document.getElementById('rv-form').onsubmit = function (e) {
+          e.preventDefault();
+          var item = { name: v('rv-name'), area: v('rv-area'), job: v('rv-job'), rating: +v('rv-rating'), text: v('rv-text') };
+          if (editIndex === -1) data.reviews.push(item); else data.reviews[editIndex] = item;
+          publish('rv-msg').then(function (j) { draw(); showTop(j.message); })
+            .catch(function (err) { var mm = document.getElementById('rv-msg'); mm.className = 'msg bad'; mm.textContent = err.message; });
+        };
+        document.getElementById('rv-name').focus();
+        return;
+      }
+      document.getElementById('rv-add').onclick = function () { draw(-1); };
+      bm.querySelectorAll('[data-edit]').forEach(function (b) { b.onclick = function () { draw(+b.dataset.edit); }; });
+      bm.querySelectorAll('[data-up]').forEach(function (b) { b.onclick = function () {
+        var i = +b.dataset.up, x = data.reviews.splice(i, 1)[0]; data.reviews.splice(i - 1, 0, x);
+        publish('rv-smsg').then(function (j) { draw(); showTop(j.message); });
+      }; });
+      bm.querySelectorAll('[data-del]').forEach(function (b) { b.onclick = function () {
+        if (!b.dataset.sure) { b.dataset.sure = '1'; b.textContent = 'Click again to remove'; return; }
+        data.reviews.splice(+b.dataset.del, 1);
+        publish('rv-smsg').then(function (j) { draw(); showTop(j.message); });
+      }; });
+      document.getElementById('rv-on').checked = !!data.enabled;
+      document.getElementById('rv-heading').value = data.heading || '';
+      document.getElementById('rv-intro').value = data.intro || '';
+      document.getElementById('rv-google').value = data.google_link || '';
+      document.getElementById('rv-settings').onsubmit = function (e) {
+        e.preventDefault();
+        data.enabled = document.getElementById('rv-on').checked; data.heading = v('rv-heading');
+        data.intro = v('rv-intro'); data.google_link = v('rv-google');
+        publish('rv-smsg').then(function (j) { var mm = document.getElementById('rv-smsg'); mm.className = 'msg ok'; mm.textContent = j.message; })
+          .catch(function (err) { var mm = document.getElementById('rv-smsg'); mm.className = 'msg bad'; mm.textContent = err.message; });
+      };
+    }
+    function showTop(text) {
+      var p = document.createElement('p'); p.className = 'msg ok'; p.textContent = text;
+      bm.querySelector('.head').after(p);
+    }
+    draw();
+  });
+}
+/* Blog */
+function blogList() {
+  api('/api/visual/blog').then(function (posts) {
+    bm.innerHTML = '<div class="head"><h2>Blog</h2><button class="btn" id="bl-new">Write a post</button></div>' +
+      '<p class="intro">Helpful posts about your work help you show up on Google. Aim for one a month: answer a question customers ask you.</p>' +
+      (posts.length ? '<table class="list"><thead><tr><th>Title</th><th>Date</th></tr></thead><tbody>' + posts.map(function (p, i) {
+        return '<tr data-i="' + i + '"><td><strong>' + esc(p.title) + '</strong><br><small class="intro">' + esc(p.description) + '</small></td><td>' + ukDate(p.date) + '</td></tr>';
+      }).join('') + '</tbody></table>' : '<div class="empty">No posts yet.</div>');
+    document.getElementById('bl-new').onclick = function () { bizView('post', {}); };
+    bm.querySelectorAll('tr[data-i]').forEach(function (tr) { tr.onclick = function () { bizView('post', { p: posts[+tr.dataset.i] }); }; });
+  });
+}
+function postEditor(arg) {
+  var p = arg.p || { title:'', date: new Date().toISOString().slice(0, 10), description:'', image:'', image_alt:'', body:'' }, photo = null;
+  bm.innerHTML = '<a href="#" class="back" id="back">← All posts</a><div class="head"><h2>' + (p.file ? 'Edit post' : 'Write a post') + '</h2>' +
+    (p.file ? '<a class="btn line small" target="_blank" rel="noopener" href="https://buildandchill.co.uk' + esc(p.url) + '">View on the website</a>' : '') + '</div>' +
+    '<form id="pf"><div class="card">' +
+    '<label class="row"><span>Title</span><input type="text" id="p-title" placeholder="e.g. Is a back-to-back air con install right for my house?"></label>' +
+    '<div class="two"><label class="row"><span>Date</span><input type="date" id="p-date"></label><span></span></div>' +
+    '<label class="row"><span>Summary shown on Google (<span id="p-count">0</span> of about 155 characters)</span><textarea id="p-desc" rows="2"></textarea></label></div>' +
+    '<div class="card"><strong>Photo</strong><img class="rimg" id="p-prev" alt="" ' + (p.image ? 'src="' + esc(p.image) + '"' : 'hidden') + '>' +
+    '<label class="snap"><input type="file" accept="image/*" id="p-photo">' + (p.image ? 'Change the photo' : 'Add a photo') + '</label>' +
+    '<label class="row"><span>Describe the photo</span><input type="text" id="p-alt"></label></div>' +
+    '<div class="card"><label class="row"><span>The post</span><textarea id="p-body" rows="22" style="font-family:ui-monospace,monospace;font-size:.95rem"></textarea></label>' +
+    '<p class="intro" style="margin:0">Start a new section with <code>## Heading</code>. Bullet points: start lines with <code>- </code>. ' +
+    'Bold: <code>**words**</code>. Link: <code>[get a quote](/#quote)</code>. Leave an empty line between paragraphs.</p></div>' +
+    '<div class="actions"><button class="btn" type="submit">Publish</button>' + (p.file ? '<button class="btn danger" type="button" id="p-del">Delete post</button>' : '') +
+    '<p class="msg" id="p-msg" role="status"></p></div></form>';
+  document.getElementById('p-title').value = p.title; document.getElementById('p-date').value = p.date;
+  document.getElementById('p-desc').value = p.description; document.getElementById('p-alt').value = p.image_alt || '';
+  document.getElementById('p-body').value = p.body;
+  var cnt = function () { document.getElementById('p-count').textContent = document.getElementById('p-desc').value.length; };
+  document.getElementById('p-desc').oninput = cnt; cnt();
+  document.getElementById('back').onclick = function (e) { e.preventDefault(); bizView('blog'); };
+  var m = document.getElementById('p-msg');
+  document.getElementById('p-photo').onchange = function () {
+    if (!this.files[0]) return;
+    shrinkPhoto(this.files[0]).then(function (data) { photo = data; var pv = document.getElementById('p-prev'); pv.src = data; pv.hidden = false; })
+      .catch(function (err) { m.className = 'msg bad'; m.textContent = err.message; });
+  };
+  document.getElementById('pf').onsubmit = function (e) {
+    e.preventDefault();
+    var b = bm.querySelector('#pf button[type=submit]'); b.disabled = true; m.className = 'msg'; m.textContent = 'Publishing…';
+    api('/api/visual/blog-save', { file: p.file, title: v('p-title'), date: v('p-date'), description: v('p-desc'), image: p.image,
+      image_alt: v('p-alt'), body: document.getElementById('p-body').value, image_data: photo })
+      .then(function (r) { postEditor({ p: r.post }); var mm = document.getElementById('p-msg'); mm.className = 'msg ok'; mm.textContent = r.message; })
+      .catch(function (err) { b.disabled = false; m.className = 'msg bad'; m.textContent = err.message; });
+  };
+  if (p.file) document.getElementById('p-del').onclick = function () {
+    var b = this;
+    if (!b.dataset.sure) { b.dataset.sure = '1'; b.textContent = 'Click again to delete this post from the website'; return; }
+    api('/api/visual/blog-delete', { file: p.file }).then(function () { bizView('blog'); })
+      .catch(function (err) { m.className = 'msg bad'; m.textContent = err.message; });
+  };
+}
+</script>
 </body>
 </html>
