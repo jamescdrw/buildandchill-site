@@ -316,3 +316,18 @@ p { margin: 0 0 1em; max-width: 62ch; }
 .offer-box > p { margin-left: auto; margin-right: auto; }
 .offer-small { font-size: .8rem; color: var(--steel); margin: 14px 0 0; }
 @media (prefers-reduced-motion: no-preference) { .offer:not([hidden]) .offer-box { animation: rise .35s cubic-bezier(.2,.7,.2,1) both; } }
+
+/* Reviews */
+.reviews { padding: clamp(72px, 10vw, 130px) 0; background: var(--paper); }
+.reviews-head { max-width: 640px; margin-bottom: 40px; }
+.reviews-head p { color: var(--steel); margin: 0; }
+.review-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 28px; }
+.review { margin: 0; padding: 28px 28px 26px; border-top: 3px solid var(--ice); background: var(--mist); display: flex; flex-direction: column; }
+.stars { margin: 0 0 14px; color: #F2A900; font-size: 1.15rem; letter-spacing: 2px; }
+.stars .off { color: #C9D3DC; }
+.review blockquote { margin: 0 0 20px; font-size: 1.05rem; line-height: 1.6; color: var(--ink); flex: 1; }
+.review figcaption { font-size: .95rem; color: var(--steel); }
+.review figcaption strong { color: var(--navy); }
+.review figcaption span { display: block; font-size: .88rem; }
+.reviews-more { margin: 32px 0 0; font-weight: 600; }
+.reviews-more a { color: var(--navy); }

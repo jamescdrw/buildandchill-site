@@ -317,6 +317,30 @@
   </div>
 </section>
 
+{%- assign rv = site.data.reviews -%}
+{%- if rv.enabled and rv.reviews.size > 0 %}
+<section class="reviews" id="reviews">
+  <div class="wrap">
+    <div class="reviews-head">
+      <h2 class="h2">{{ rv.heading | escape }}</h2>
+      {%- if rv.intro and rv.intro != '' %}<p>{{ rv.intro | escape }}</p>{% endif %}
+    </div>
+    <div class="review-grid">
+      {%- for r in rv.reviews %}
+      <figure class="review">
+        <p class="stars" aria-label="{{ r.rating | default: 5 }} out of 5 stars">{% assign n = r.rating | default: 5 %}{% for i in (1..5) %}<span{% if i > n %} class="off"{% endif %} aria-hidden="true">★</span>{% endfor %}</p>
+        <blockquote>{{ r.text | escape }}</blockquote>
+        <figcaption><strong>{{ r.name | escape }}</strong>{% if r.area and r.area != '' %}, {{ r.area | escape }}{% endif %}{% if r.job and r.job != '' %}<span>{{ r.job | escape }}</span>{% endif %}</figcaption>
+      </figure>
+      {%- endfor %}
+    </div>
+    {%- if rv.google_link and rv.google_link != '' %}
+    <p class="reviews-more"><a href="{{ rv.google_link }}" rel="noopener" target="_blank">Read more reviews on Google</a></p>
+    {%- endif %}
+  </div>
+</section>
+{%- endif %}
+
 <section class="accred" id="accreditations">
   <div class="wrap accred-row">
     <div class="accred-copy">
