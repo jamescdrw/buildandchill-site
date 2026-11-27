@@ -22,4 +22,4 @@ exclude:
   - Gemfile.lock
 
 # Where the website quote chat sends requests (the Build & Chill admin server)
-enquiry_endpoint: ''
+enquiry_endpoint: 'https://buildandchill-admin.buildandchill-admin-worker.workers.dev/enquiry'

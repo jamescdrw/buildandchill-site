@@ -374,7 +374,7 @@
       <p class="contact-line muted">{{ site.data.contact.name_line | escape }}</p>
       <p><button type="button" class="btn" data-open-chat>Answer a few quick questions instead</button></p>
     </div>
-    <form class="quote-form" id="quote-form" data-email="{{ site.data.contact.email }}" novalidate>
+    <form class="quote-form" id="quote-form" data-email="{{ site.data.contact.email }}" data-endpoint="{{ site.enquiry_endpoint }}" novalidate>
       <div class="field">
         <label for="f-name">Your name</label>
         <input id="f-name" name="name" autocomplete="name" required>
@@ -403,12 +403,16 @@
         </select>
       </div>
       <div class="field">
+        <label for="f-email">Email (optional)</label>
+        <input id="f-email" name="email" type="email" autocomplete="email">
+      </div>
+      <div class="field">
         <label for="f-msg">About the job</label>
         <textarea id="f-msg" name="message" rows="5" placeholder="Room size, timescale, anything you've already bought…"></textarea>
       </div>
       <p class="form-error" id="form-error" role="alert" hidden></p>
       <button class="btn btn-full" type="submit">Send my enquiry</button>
-      <p class="form-note">This opens your email app with your details filled in, ready to send.</p>
+      <p class="form-note">{% if site.enquiry_endpoint != "" %}Your details come straight to us and we'll get back to you to arrange a visit.{% else %}This opens your email app with your details filled in, ready to send.{% endif %}</p>
     </form>
   </div>
 </section>
