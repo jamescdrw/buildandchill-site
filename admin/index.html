@@ -6,8 +6,8 @@
 <title>Admin | Build &amp; Chill</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" type="image/png" href="/assets/img/favicon.png">
-<script>window.BC_VERSION = "4"; window.BC_GATEWAY = "";</script>
-<script src="/admin/app.js?v=4"></script>
+<script>window.BC_VERSION = "5"; window.BC_GATEWAY = ""; window.BC_SERVER = "";</script>
+<script src="/admin/app.js?v=5"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@1,125,800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -104,6 +104,11 @@
   .compose { background:var(--bg); }
   .note { background:#FFF7E0; border-left:4px solid #E0A800; padding:10px 14px; border-radius:6px; margin:10px 0; }
   .wa { background:#1FA855; }
+  .count { background:#E53935; color:#fff; border-radius:99px; font-size:.78rem; font-weight:700; padding:.05em .55em; margin-left:4px; }
+  .enq { background:#fff; border:1px solid var(--line); border-left:5px solid var(--line); border-radius:8px; padding:16px 18px; margin-bottom:14px; }
+  .enq.new { border-left-color:#E53935; } .enq.called, .enq.replied { border-left-color:var(--ice); } .enq.quoted, .enq.done { border-left-color:#1B7A3A; }
+  .enq h3 { margin:0; } .enq-top { display:flex; justify-content:space-between; gap:12px; align-items:flex-start; flex-wrap:wrap; }
+  .enq-dl { display:grid; grid-template-columns:90px 1fr; gap:4px 12px; margin:12px 0; } .enq-dl dt { color:var(--steel); } .enq-dl dd { margin:0; white-space:pre-wrap; }
   .vis-hide { position:absolute; width:1px; height:1px; opacity:0; overflow:hidden; }
   label.btn { position:relative; }
   .vgrid { display:grid; grid-template-columns:repeat(auto-fill, minmax(110px, 1fr)); gap:10px; margin-top:12px; }
@@ -195,6 +200,7 @@
     </nav>
     <p class="grp">Jobs and quotes</p>
     <nav>
+      <a href="#" data-view="enquiries">Enquiries <span class="count" id="enq-count" hidden></span></a>
       <a href="#" data-view="visits">Site visits</a>
       <a href="#" data-view="quick">Quick quote</a>
       <a href="#" data-view="quote">Quotes</a>
@@ -226,7 +232,7 @@
     <a href="https://buildandchill.co.uk" target="_blank" rel="noopener" class="out">View live site</a>
     <a href="#" id="logout" class="out">Log out</a>
   </aside>
-  <p class="demo-banner" id="demo-banner" hidden>Demo version: try anything you like. Nothing is saved to the real website, and changes stay on this device only. <a href="#" id="demo-reset">Start the demo again</a></p>
+  <p class="demo-banner" id="demo-banner" hidden>Demo version: try anything you like. Nothing is saved to the real website, and changes stay on this device only. Enquiries from the website chat are real. <a href="#" id="demo-reset">Start the demo again</a></p>
   <main id="bizmain" hidden></main>
   <main id="sitemain">
     <h2 id="title"></h2>
@@ -400,6 +406,7 @@ function start() {
     document.getElementById('login').style.display = 'none';
     document.getElementById('app').style.display = 'grid';
     bizView('overview');
+    if (window.BCX) { BCX.refreshEnquiryCount(); setInterval(BCX.refreshEnquiryCount, 120000); }
   });
 }
 
@@ -504,10 +511,13 @@ document.querySelectorAll('aside a[data-view]').forEach(function (a) {
 
 /* Overview */
 function overview() {
-  Promise.all([api('/api/summary'), api('/api/docs?kind=invoice'), api('/api/docs?kind=quote')]).then(function (r) {
+  Promise.all([api('/api/summary'), api('/api/docs?kind=invoice'), api('/api/docs?kind=quote'),
+    BC.SERVER ? api('/api/enquiries').catch(function () { return []; }) : Promise.resolve([])]).then(function (r) {
     var s = r[0];
+    s.new_enquiries = r[3].filter(function (e) { return e.status === 'new'; }).length;
     bm.innerHTML = '<div class="head"><h2>Overview</h2><div class="actions">' +
       '<button class="btn line" id="nq">New quote</button><button class="btn line" id="ni">New invoice</button></div></div>' +
+      (s.new_enquiries ? '<p class="note"><strong>' + s.new_enquiries + ' new enquir' + (s.new_enquiries === 1 ? 'y' : 'ies') + '</strong> from your website. <a href="#" id="o-enq">See them</a></p>' : '') +
       '<div class="onsite"><button type="button" id="o-visit"><b>Start a site visit</b><span>Photos and voice notes</span></button>' +
       '<button type="button" id="o-quick"><b>Quick quote</b><span>Tap your usual prices</span></button>' +
       '<button type="button" id="o-rec"><b>Scan a receipt</b><span>Snap it with the camera</span></button>' +
@@ -521,6 +531,7 @@ function overview() {
       '<h3 style="margin-top:28px">Recent quotes</h3>' + docTable(r[2].slice(0, 5), 'quote');
     document.getElementById('nq').onclick = function () { bizView('doc', { kind:'quote' }); };
     document.getElementById('o-visit').onclick = function () { BCX.newVisit(); };
+    if (s.new_enquiries) document.getElementById('o-enq').onclick = function (e) { e.preventDefault(); bizView('enquiries'); };
     document.getElementById('o-quick').onclick = function () { bizView('quick'); };
     document.getElementById('o-rec').onclick = function () { bizView('receipt', {}); };
     document.getElementById('o-post').onclick = function () { bizView('socials'); };
@@ -1218,6 +1229,6 @@ function postEditor(arg) {
   };
 }
 </script>
-<script src="/admin/extras.js?v=4"></script>
+<script src="/admin/extras.js?v=5"></script>
 </body>
 </html>

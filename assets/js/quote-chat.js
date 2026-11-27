@@ -1,10 +1,11 @@
-/* Quote chat: asks a few simple questions, then sends the request to Ashley by WhatsApp or email. */
+/* Quote chat: asks a few simple questions, then sends the request to the Build & Chill admin (or by email/WhatsApp). */
 (function () {
   var cfg = document.getElementById('qchat-cfg');
   if (!cfg || document.getElementById('qchat')) return;
   var EMAIL = cfg.getAttribute('data-email') || 'info@buildandchill.co.uk';
   var WA = (cfg.getAttribute('data-whatsapp') || '').replace(/\D/g, '').replace(/^0/, '44');
   var PHONE = cfg.getAttribute('data-phone') || '';
+  var ENDPOINT = cfg.getAttribute('data-endpoint') || '';
 
   var JOBS = {
     'Air conditioning': { q: 'How many rooms would you like cooled?', a: ['1 room', '2 rooms', '3 rooms', '4 or more'] },
@@ -23,10 +24,11 @@
   root.innerHTML =
     '<button type="button" class="qc-open" aria-expanded="false" aria-controls="qc-panel">Get a quote</button>' +
     '<section class="qc-panel" id="qc-panel" role="dialog" aria-label="Get a quote" hidden>' +
-      '<header class="qc-head"><div><strong>Get a free quote</strong><span>Answers go straight to Ashley</span></div>' +
+      '<header class="qc-head"><span class="qc-av" aria-hidden="true">B&amp;C</span><div><strong>Get a free quote</strong><span>Build &amp; Chill Property Services</span></div>' +
       '<button type="button" class="qc-x" aria-label="Close">×</button></header>' +
       '<div class="qc-log" aria-live="polite"></div>' +
       '<div class="qc-input"></div>' +
+      '<p class="qc-foot">A few quick questions to get your quote started. We read every request and reply personally.</p>' +
     '</section>';
   document.body.appendChild(root);
   var openBtn = root.querySelector('.qc-open'), panel = root.querySelector('.qc-panel');
@@ -75,8 +77,8 @@
 
   function start() {
     log.innerHTML = ''; ans = {};
-    bot("Hi, I'll get your quote request to Ashley. It takes about a minute.");
-    bot('What do you need?');
+    bot("Hi, welcome to Build & Chill. Answer a few quick questions and we'll get back to you with your quote. It takes about a minute.");
+    bot('What can we help with?');
     chips(Object.keys(JOBS), function (job) {
       ans.job = job;
       var j = JOBS[job];
@@ -90,7 +92,7 @@
     chips(WHEN, function (w) { ans.when = w; askMore(false); });
   }
   function askMore(required) {
-    bot(required ? 'Tell me a bit about the job.' : 'Anything else Ashley should know? Sizes, what you have already bought, access…');
+    bot(required ? 'Tell us a bit about the job.' : 'Anything else we should know? Sizes, what you have already bought, access…');
     text('Type here', function (v) { ans.more = v; if (required) askWhenAfter(); else askName(); }, required ? null : 'skip', { multi: true });
   }
   function askWhenAfter() { bot('When would you like it done?'); chips(WHEN, function (w) { ans.when = w; askName(); }); }
@@ -99,34 +101,68 @@
     text('Your name', function (v) { ans.name = v; askPhone(); }, null, { auto: 'name' });
   }
   function askPhone() {
-    bot('Thanks ' + ans.name.split(' ')[0] + '. What number can Ashley call you on?');
+    bot('Thanks ' + first() + ". What's the best number to call you on?");
     text('Phone number', function (v) { ans.phone = v; askPostcode(); }, null, { type: 'tel', auto: 'tel',
       check: function (v) { return v.replace(/\D/g, '').length < 10 ? 'Enter a full phone number, like 07700 900123.' : ''; } });
   }
   function askPostcode() {
     bot("And the job's postcode?");
-    text('Postcode', function (v) { ans.postcode = v.toUpperCase(); finish(); }, null, { auto: 'postal-code',
+    text('Postcode', function (v) { ans.postcode = v.toUpperCase().replace(/\s+/g, ' '); askEmail(); }, null, { auto: 'postal-code',
       check: function (v) { return /^[A-Za-z]{1,2}\d[A-Za-z\d]?\s*\d[A-Za-z]{2}$/.test(v.trim()) ? '' : 'Enter a full postcode, like LE4 3AB.'; } });
   }
 
+  function first() { return ans.name.split(/\s+/)[0]; }
+  function askEmail() {
+    bot('And your email, if you would like the quote sent by email? You can skip this.');
+    text('Email address', function (v) { ans.email = v; finish(); }, 'skip', { type: 'email', auto: 'email',
+      check: function (v) { return !v || /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v) ? '' : 'That email does not look right. Check it, or press Skip.'; } });
+  }
   function message() {
     return 'Quote request from the website\n\n' +
       'Job: ' + ans.job + (ans.detail ? ' (' + ans.detail + ')' : '') + '\n' +
       'When: ' + (ans.when || 'Not said') + '\n' +
       (ans.more ? 'Details: ' + ans.more + '\n' : '') +
-      '\nName: ' + ans.name + '\nPhone: ' + ans.phone + '\nPostcode: ' + ans.postcode + '\n';
+      '\nName: ' + ans.name + '\nPhone: ' + ans.phone + (ans.email ? '\nEmail: ' + ans.email : '') + '\nPostcode: ' + ans.postcode + '\n';
   }
   function finish() {
-    bot("Here's your request. Choose how to send it and it opens ready to go. Photos of the job help, so add a few if you can.");
+    bot('Thanks ' + first() + ", here's your request:");
     var box = document.createElement('pre'); box.className = 'qc-sum'; box.textContent = message(); log.appendChild(box);
+    input.innerHTML = '';
+    var w = document.createElement('div'); w.className = 'qc-send';
+    var go = document.createElement('button'); go.type = 'button'; go.className = 'qc-btn qc-go'; go.textContent = 'Send my quote request';
+    var again = document.createElement('button'); again.type = 'button'; again.className = 'qc-skip'; again.textContent = 'Start again';
+    again.onclick = start;
+    w.append(go, again); input.appendChild(w); scroll(); go.focus();
+    if (!ENDPOINT) { go.remove(); return fallback(); }
+    go.onclick = function () {
+      go.disabled = true; go.textContent = 'Sending…';
+      var payload = { name: ans.name, phone: ans.phone, email: ans.email || '', postcode: ans.postcode, job: ans.job,
+        detail: ans.detail || '', when: ans.when || '', more: ans.more || '', website: '' };
+      fetch(ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+        .then(function (r) { if (!r.ok) throw new Error(); })
+        .then(function () {
+          input.innerHTML = '';
+          bot('Thanks ' + first() + ", that's sent. We'll call you on " + ans.phone + (ans.email ? ' or email you' : '') +
+            ' to talk it through and arrange a visit. Speak soon, ' + first() + '!');
+          var done = document.createElement('div'); done.className = 'qc-send';
+          var close = document.createElement('button'); close.type = 'button'; close.className = 'qc-btn qc-plain'; close.textContent = 'Close';
+          close.onclick = function () { setOpen(false); };
+          done.appendChild(close); input.appendChild(done); close.focus();
+        })
+        .catch(function () {
+          go.remove();
+          bot("Sorry " + first() + ", that didn't go through. You can send the same details another way:");
+          fallback();
+        });
+    };
+  }
+  function fallback() {
     input.innerHTML = '';
     var w = document.createElement('div'); w.className = 'qc-send';
     var subject = 'Quote request: ' + ans.job + ' (' + ans.postcode + ')';
     if (WA.length >= 10) w.appendChild(link('Send on WhatsApp', 'https://wa.me/' + WA + '?text=' + encodeURIComponent(message()), 'qc-wa'));
     w.appendChild(link('Send by email', 'mailto:' + EMAIL + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(message()), ''));
     if (PHONE) w.appendChild(link('Or call ' + PHONE, 'tel:' + PHONE.replace(/\s/g, ''), 'qc-plain'));
-    var again = document.createElement('button'); again.type = 'button'; again.className = 'qc-skip'; again.textContent = 'Start again';
-    again.onclick = start; w.appendChild(again);
     input.appendChild(w);
     scroll();
     w.querySelector('a').focus();
@@ -134,7 +170,7 @@
   function link(label, href, cls) {
     var a = document.createElement('a'); a.href = href; a.textContent = label; a.className = 'qc-btn ' + cls;
     if (href.indexOf('http') === 0) { a.target = '_blank'; a.rel = 'noopener'; }
-    a.onclick = function () { setTimeout(function () { bot("Thanks. Once it's sent, Ashley will get back to you to arrange a visit."); }, 600); };
+    a.onclick = function () { setTimeout(function () { bot('Thanks ' + first() + ". Once it's sent, we'll get back to you to arrange a visit."); }, 600); };
     return a;
   }
 

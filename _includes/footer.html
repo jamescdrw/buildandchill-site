@@ -17,8 +17,8 @@
     </div>
   </div>
 </footer>
-<div id="qchat-cfg" hidden data-email="{{ site.data.contact.email }}" data-whatsapp="{{ site.data.contact.whatsapp }}" data-phone="{{ site.data.contact.phone }}"></div>
-<script src="/assets/js/quote-chat.js" defer></script>
+<div id="qchat-cfg" hidden data-email="{{ site.data.contact.email }}" data-whatsapp="{{ site.data.contact.whatsapp }}" data-phone="{{ site.data.contact.phone }}" data-endpoint="{{ site.enquiry_endpoint }}"></div>
+<script src="/assets/js/quote-chat.js?v={{ site.time | date: '%s' }}" defer></script>
 {%- if site.preview %}
 <script src="{{ site.admin_url }}/editor-inject.js"></script>
 {%- endif %}

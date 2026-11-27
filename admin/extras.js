@@ -83,6 +83,7 @@
     var v = { id: Date.now(), date: todayIso(), customer_id: '', new_name: '', new_phone: '', postcode: '', address: '', job: '',
       notes: '', photos: [], audio: [], quote_id: null };
     if (pre && pre.customer_id) v.customer_id = pre.customer_id;
+    if (pre && pre.job) v.job = BCX._jobFor(pre.job);
     return visits.put(v).then(function () { bizView('visit', { id: v.id }); });
   }
   BCX.newVisit = newVisit;
@@ -338,15 +339,22 @@
   BCX._parseAi = parseAi;
 
   /* ---------- Quick quote ---------- */
+  BCX._jobFor = function (j) {
+    var map = { 'air conditioning': 'Air conditioning', 'kitchen': 'Kitchen', 'bathroom or en-suite': 'Bathroom', 'extension': 'Extension',
+      'commercial ceiling': 'Ceiling', 'repairs or maintenance': 'Repairs' };
+    var want = map[String(j || '').toLowerCase()] || j;
+    return jobNames().indexOf(want) >= 0 ? want : '';
+  };
   BCX.quick = function (arg) {
-    var pre = arg && arg.visitId ? visits.get(arg.visitId) : Promise.resolve(null);
+    var pre = arg && arg.visitId ? visits.get(arg.visitId) :
+      Promise.resolve(arg && arg.customer_id ? { customer_id: arg.customer_id, job: BCX._jobFor(arg.job), new_name: '', new_phone: '', postcode: '', address: '', fromEnquiry: true } : null);
     return pre.then(function (v) { drawQuick(v); });
   };
   function drawQuick(v) {
     var book = priceBook(), jobs = jobNames(), picked = {};
     if (v && v.job && jobs.indexOf(v.job) >= 0) picked[v.job] = true;
     bm.innerHTML = '<div class="head"><h2>Quick quote</h2></div>' +
-      '<p class="intro">Tap the jobs, tick the lines you need, change any number, then press <strong>Create quote</strong>. ' + (v ? 'Using your site visit notes.' : '') + '</p>' +
+      '<p class="intro">Tap the jobs, tick the lines you need, change any number, then press <strong>Create quote</strong>. ' + (v && !v.fromEnquiry ? 'Using your site visit notes.' : '') + '</p>' +
       '<div class="card"><div class="two"><label class="row"><span>Customer</span><select id="q-cust">' + custOptions(v ? v.customer_id : '') + '</select></label>' +
         '<label class="row"><span>Job title on the quote</span><input type="text" id="q-title" placeholder="e.g. Bathroom refit"></label></div>' +
         '<div id="q-new" class="three"' + (v && v.customer_id === 'new' ? '' : ' hidden') + '>' +
@@ -416,7 +424,7 @@
         return api('/api/docs', { kind: 'quote', customer_id: cid, title: document.getElementById('q-title').value.trim(), items: items,
           notes: document.getElementById('q-notes').value.trim(), status: 'draft', vat_rate: B.settings.vat_registered ? B.settings.vat_rate : 0 });
       }).then(function (doc) {
-        var done = v ? (v.quote_id = doc.id, v.customer_id = doc.customer_id, visits.put(v)) : Promise.resolve();
+        var done = v && !v.fromEnquiry ? (v.quote_id = doc.id, v.customer_id = doc.customer_id, visits.put(v)) : Promise.resolve();
         return done.then(loadBase).then(function () { bizView('doc', { id: doc.id, kind: 'quote' }); });
       }).catch(function (e) { btn.disabled = false; say('q-msg', e.message, false); });
     };
@@ -426,6 +434,94 @@
       }).catch(function (e) { say('q-bmsg', e.message, false); });
     };
   }
+
+
+  /* ---------- Enquiries from the website quote chat ---------- */
+  var STAT = { new: 'New', called: 'Called', replied: 'Replied', quoted: 'Quoted', done: 'Done' };
+  function ago(iso) {
+    var m = Math.round((Date.now() - new Date(iso)) / 60000);
+    if (m < 60) return m <= 1 ? 'just now' : m + ' minutes ago';
+    if (m < 1440) return Math.round(m / 60) + ' hour' + (m < 120 ? '' : 's') + ' ago';
+    return new Date(iso).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }) + ', ' +
+      new Date(iso).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+  }
+  BCX.refreshEnquiryCount = function () {
+    var el = document.getElementById('enq-count');
+    if (!el || !BC.SERVER) return;
+    api('/api/enquiries').then(function (rows) {
+      var n = rows.filter(function (e) { return e.status === 'new'; }).length;
+      el.textContent = n; el.hidden = !n;
+    }).catch(function () {});
+  };
+  BCX.enquiries = function () {
+    if (!BC.SERVER) {
+      bm.innerHTML = '<div class="head"><h2>Enquiries</h2></div><div class="empty">Quote requests from the website chat will show here once the admin server is switched on. ' +
+        'Until then, the chat sends them to ' + esc(B.settings.email || 'your email') + '.</div>';
+      return Promise.resolve();
+    }
+    return api('/api/enquiries').then(function (rows) {
+      var first = function (n) { return String(n || '').split(/\s+/)[0]; };
+      var owner = (B.settings.owner_name || 'Ashley').split(/\s+/)[0], biz = B.settings.business_name || 'Build & Chill';
+      bm.innerHTML = '<div class="head"><h2>Enquiries</h2><button class="btn line" id="e-refresh">Check for new</button></div>' +
+        '<p class="intro">Quote requests from the chat on your website. Call or reply, then mark where you are with each one.</p>' +
+        (rows.length ? rows.map(function (e) {
+          var job = e.job + (e.detail ? ' (' + e.detail + ')' : '');
+          var hello = 'Hi ' + first(e.name) + ", it's " + owner + ' from ' + biz + ' about your ' + e.job.toLowerCase() + ' quote request.';
+          var wa = BCX._wa(e.phone);
+          return '<article class="enq ' + e.status + '" data-id="' + esc(e.id) + '">' +
+            '<div class="enq-top"><div><h3>' + esc(e.name) + '</h3><p class="intro" style="margin:0">' + esc(job) + ' · ' + esc(e.postcode) + ' · ' + ago(e.at) + '</p></div>' +
+            '<select class="e-status" aria-label="Status for ' + esc(e.name) + '" style="width:auto">' + Object.keys(STAT).map(function (k) {
+              return '<option value="' + k + '"' + (k === e.status ? ' selected' : '') + '>' + STAT[k] + '</option>'; }).join('') + '</select></div>' +
+            '<dl class="enq-dl"><dt>Phone</dt><dd>' + esc(e.phone) + '</dd>' + (e.email ? '<dt>Email</dt><dd>' + esc(e.email) + '</dd>' : '') +
+              '<dt>When</dt><dd>' + esc(e.when || 'Not said') + '</dd>' + (e.more ? '<dt>Details</dt><dd>' + esc(e.more) + '</dd>' : '') + '</dl>' +
+            '<div class="actions">' +
+              '<a class="btn" href="tel:' + esc(e.phone.replace(/[^\d+]/g, '')) + '" data-mark="called">Call</a>' +
+              (e.email ? '<a class="btn line" href="mailto:' + esc(e.email) + '?subject=' + encodeURIComponent('Your ' + e.job.toLowerCase() + ' quote request') +
+                '&body=' + encodeURIComponent(hello + '\n\n') + '" data-mark="replied">Reply by email</a>' : '') +
+              (wa ? '<a class="btn wa" target="_blank" rel="noopener" href="https://wa.me/' + wa + '?text=' + encodeURIComponent(hello) + '" data-mark="replied">WhatsApp</a>' : '') +
+              '<a class="btn line" href="sms:' + esc(e.phone.replace(/[^\d+]/g, '')) + '?&body=' + encodeURIComponent(hello) + '" data-mark="replied">Text</a>' +
+              '<button type="button" class="btn line" data-act="visit">Book a site visit</button>' +
+              '<button type="button" class="btn line" data-act="quote">Make a quote</button>' +
+              '<button type="button" class="btn danger" data-act="del">Delete</button></div></article>';
+        }).join('') : '<div class="empty">No enquiries yet. When someone uses the quote chat on your website, it shows up here.</div>') +
+        '<p class="msg" id="e-msg" role="status"></p>';
+      document.getElementById('e-refresh').onclick = function () { bizView('enquiries'); };
+      function setStatus(card, status) {
+        return api('/api/enquiries/' + encodeURIComponent(card.dataset.id), { status: status }).then(function () {
+          card.className = 'enq ' + status; card.querySelector('.e-status').value = status; BCX.refreshEnquiryCount();
+        }).catch(function (err) { say('e-msg', err.message, false); });
+      }
+      function toCustomer(e) {
+        var ex = B.customers.filter(function (c) { return c.phone.replace(/\D/g, '') === e.phone.replace(/\D/g, ''); })[0];
+        if (ex) return Promise.resolve(ex.id);
+        return api('/api/customers', { name: e.name, phone: e.phone, email: e.email || '', postcode: e.postcode, address: '',
+          notes: 'From website enquiry: ' + e.job + (e.detail ? ' (' + e.detail + ')' : '') + (e.more ? '. ' + e.more : '') })
+          .then(function (c) { return loadBase().then(function () { return c.id; }); });
+      }
+      bm.querySelectorAll('article.enq').forEach(function (card) {
+        var e = rows.filter(function (r) { return r.id === card.dataset.id; })[0];
+        card.querySelector('.e-status').onchange = function () { setStatus(card, this.value); };
+        card.querySelectorAll('[data-mark]').forEach(function (a) {
+          a.addEventListener('click', function () { if (e.status === 'new') { e.status = a.dataset.mark; setStatus(card, a.dataset.mark); } });
+        });
+        card.querySelector('[data-act=visit]').onclick = function () { toCustomer(e).then(function (cid) { BCX.newVisit({ customer_id: cid, job: e.job }); }); };
+        card.querySelector('[data-act=quote]').onclick = function () {
+          toCustomer(e).then(function (cid) { return setStatus(card, 'quoted').then(function () { bizView('quick', { customer_id: cid, job: e.job }); }); });
+        };
+        card.querySelector('[data-act=del]').onclick = function () {
+          if (!confirm('Delete the enquiry from ' + e.name + '?')) return;
+          api('/api/enquiries/' + encodeURIComponent(e.id) + '/delete', {}).then(function () { card.remove(); BCX.refreshEnquiryCount(); })
+            .catch(function (err) { say('e-msg', err.message, false); });
+        };
+      });
+      BCX.refreshEnquiryCount();
+    });
+  };
+  BCX._wa = function (phone) {
+    var d = String(phone || '').replace(/\D/g, '');
+    if (d.indexOf('00') === 0) d = d.slice(2); else if (d.indexOf('0') === 0) d = '44' + d.slice(1);
+    return d.length >= 11 && /^447/.test(d) ? d : '';
+  };
 
   /* ---------- Socials ---------- */
   var NETS = [

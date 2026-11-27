@@ -20,3 +20,6 @@ exclude:
   - README.md
   - Gemfile
   - Gemfile.lock
+
+# Where the website quote chat sends requests (the Build & Chill admin server)
+enquiry_endpoint: ''
