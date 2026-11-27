@@ -6,8 +6,8 @@
 <title>Admin | Build &amp; Chill</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" type="image/png" href="/assets/img/favicon.png">
-<script>window.BC_VERSION = "1";</script>
-<script src="/admin/app.js?v=2"></script>
+<script>window.BC_VERSION = "3"; window.BC_GATEWAY = "";</script>
+<script src="/admin/app.js?v=3"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@1,125,800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -103,6 +103,11 @@
   .compose { background:var(--bg); }
   .note { background:#FFF7E0; border-left:4px solid #E0A800; padding:10px 14px; border-radius:6px; margin:10px 0; }
   .wa { background:#1FA855; }
+  #app > aside { grid-row:1 / span 2; }
+  #bizmain, #sitemain { grid-column:2; }
+  #app { grid-template-rows:auto 1fr; }
+  .demo-banner { grid-column:2; grid-row:1; margin:0; padding:10px clamp(20px, 4vw, 56px); background:#FFF7E0; border-bottom:1px solid #F0DC9A; font-size:.95rem; }
+  @media (max-width:760px) { #app > aside { grid-row:auto; } #bizmain, #sitemain, .demo-banner { grid-column:1; grid-row:auto; } #app { grid-template-rows:none; } }
   #bizmain.wide { max-width:none; }
   .live { display:grid; grid-template-columns:1fr 340px; gap:18px; align-items:start; }
   .frame-wrap { background:#fff; border:1px solid var(--line); border-radius:8px; overflow:hidden; display:flex; justify-content:center; }
@@ -141,18 +146,10 @@
   <form id="login-form">
     <img src="/assets/img/logo.png" alt="Build &amp; Chill Property Services">
     <h1>Admin login</h1>
-    <div id="pw-only">
-      <label class="f" for="pw">Password</label>
-      <input id="pw" type="password" autocomplete="current-password">
-      <p class="intro" style="font-size:.9rem;margin-top:10px"><a href="#" id="newkey">Set up this device again</a></p>
-    </div>
-    <div id="first-time">
-      <p>First time on this phone or computer: paste the admin key once, then choose a password. After that you only need the password here.</p>
-      <label class="f" for="k">Admin key</label>
-      <input id="k" type="password" autocomplete="off" spellcheck="false">
-      <label class="f" for="pw1">Choose a password</label>
-      <input id="pw1" type="password" autocomplete="new-password">
-    </div>
+    <label class="f" for="em">Email</label>
+    <input id="em" type="text" autocomplete="username" required>
+    <label class="f" for="pw">Password</label>
+    <input id="pw" type="password" autocomplete="current-password" required>
     <p class="err" id="login-err" hidden></p>
     <p><button class="btn" type="submit">Log in</button></p>
   </form>
@@ -181,6 +178,7 @@
     <a href="https://buildandchill.co.uk" target="_blank" rel="noopener" class="out">View live site</a>
     <a href="#" id="logout" class="out">Log out</a>
   </aside>
+  <p class="demo-banner" id="demo-banner" hidden>Demo version: try anything you like. Nothing is saved to the real website, and changes stay on this device only. <a href="#" id="demo-reset">Start the demo again</a></p>
   <main id="bizmain" hidden></main>
   <main id="sitemain">
     <h2 id="title"></h2>
@@ -337,7 +335,7 @@ document.addEventListener('click', function (e) {
 });
 
 function start() {
-  fetch('/api/data').then(function (r) {
+  return fetch('/api/data').then(function (r) {
     if (r.status === 401) { BC.clearKey(); document.getElementById('login').style.display = 'grid'; document.getElementById('app').style.display = 'none'; return null; }
     return r.json();
   }).then(function (d) {
@@ -355,37 +353,18 @@ function start() {
   });
 }
 
-function loginMode() {
-  var v = BC.hasVault();
-  document.getElementById('pw-only').hidden = !v;
-  document.getElementById('first-time').hidden = v;
-  (v ? document.getElementById('pw') : document.getElementById('k')).focus();
-}
-loginMode();
-document.getElementById('newkey').onclick = function (e) { e.preventDefault(); BC.forgetDevice(); loginMode(); };
 document.getElementById('login-form').onsubmit = function (e) {
   e.preventDefault();
   var err = document.getElementById('login-err'); err.hidden = true;
   var btn = e.target.querySelector('button[type=submit]'); btn.disabled = true; btn.textContent = 'Checking…';
-  function fail(text) { btn.disabled = false; btn.textContent = 'Log in'; err.textContent = text; err.hidden = false; }
-  if (BC.hasVault()) {
-    BC.unlock(document.getElementById('pw').value).then(function (ok) {
-      if (!ok) return fail('Wrong password.');
-      document.getElementById('pw').value = ''; btn.disabled = false; btn.textContent = 'Log in'; start();
-    });
-    return;
-  }
-  var key = document.getElementById('k').value.trim(), pw = document.getElementById('pw1').value;
-  if (!key) return fail('Paste the admin key.');
-  if (pw.length < 6) return fail('Choose a password of at least 6 characters.');
-  BC.setKey(key);
-  BC.checkKey().then(function (problem) {
-    if (problem) { BC.clearKey(); return fail(problem); }
-    return BC.lockWithPassword(pw).then(function () {
-      document.getElementById('k').value = ''; document.getElementById('pw1').value = '';
-      btn.disabled = false; btn.textContent = 'Log in'; start();
-    });
-  }).catch(function (x) { BC.clearKey(); fail(x.message); });
+  BC.login(document.getElementById('pw').value, document.getElementById('em').value).then(function (problem) {
+    btn.disabled = false; btn.textContent = 'Log in';
+    if (problem) { err.textContent = problem; err.hidden = false; return; }
+    btn.disabled = true; btn.textContent = 'Opening…';
+    document.getElementById('pw').value = '';
+    start().catch(function (x) { err.textContent = 'Could not open the admin: ' + x.message; err.hidden = false; })
+      .then(function () { btn.disabled = false; btn.textContent = 'Log in'; });
+  });
 };
 
 document.getElementById('logout').onclick = function (e) {
@@ -407,6 +386,10 @@ document.getElementById('save').onclick = function () {
   .catch(function () { btn.disabled = false; msg.className = 'msg bad'; msg.textContent = 'Could not reach the admin. Check your internet connection.'; });
 };
 
+if (BC.DEMO) {
+  document.getElementById('demo-banner').hidden = false;
+  document.getElementById('demo-reset').onclick = function (e) { e.preventDefault(); BC.resetDemo(); localStorage.removeItem('bc-live-ops'); location.reload(); };
+}
 if (BC.getKey()) start();
 </script>
 
