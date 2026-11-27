@@ -7,7 +7,7 @@
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" type="image/png" href="/assets/img/favicon.png">
 <script>window.BC_VERSION = "1";</script>
-<script src="/admin/app.js?v=1"></script>
+<script src="/admin/app.js?v=2"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@1,125,800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -141,12 +141,20 @@
   <form id="login-form">
     <img src="/assets/img/logo.png" alt="Build &amp; Chill Property Services">
     <h1>Admin login</h1>
-    <p>Paste your admin key. You only need to do this once on each phone or computer.</p>
-    <label class="f" for="k">Admin key</label>
-    <input id="k" type="password" autocomplete="current-password" spellcheck="false" required>
+    <div id="pw-only">
+      <label class="f" for="pw">Password</label>
+      <input id="pw" type="password" autocomplete="current-password">
+      <p class="intro" style="font-size:.9rem;margin-top:10px"><a href="#" id="newkey">Set up this device again</a></p>
+    </div>
+    <div id="first-time">
+      <p>First time on this phone or computer: paste the admin key once, then choose a password. After that you only need the password here.</p>
+      <label class="f" for="k">Admin key</label>
+      <input id="k" type="password" autocomplete="off" spellcheck="false">
+      <label class="f" for="pw1">Choose a password</label>
+      <input id="pw1" type="password" autocomplete="new-password">
+    </div>
     <p class="err" id="login-err" hidden></p>
     <p><button class="btn" type="submit">Log in</button></p>
-    <p class="intro" style="font-size:.9rem">Don't share this key. Anyone who has it can change the website and see customer details. If a phone is lost, the key can be cancelled on GitHub.</p>
   </form>
 </div>
 
@@ -347,20 +355,41 @@ function start() {
   });
 }
 
+function loginMode() {
+  var v = BC.hasVault();
+  document.getElementById('pw-only').hidden = !v;
+  document.getElementById('first-time').hidden = v;
+  (v ? document.getElementById('pw') : document.getElementById('k')).focus();
+}
+loginMode();
+document.getElementById('newkey').onclick = function (e) { e.preventDefault(); BC.forgetDevice(); loginMode(); };
 document.getElementById('login-form').onsubmit = function (e) {
   e.preventDefault();
   var err = document.getElementById('login-err'); err.hidden = true;
-  var btn = e.target.querySelector('button'); btn.disabled = true; btn.textContent = 'Checking…';
-  BC.setKey(document.getElementById('k').value);
+  var btn = e.target.querySelector('button[type=submit]'); btn.disabled = true; btn.textContent = 'Checking…';
+  function fail(text) { btn.disabled = false; btn.textContent = 'Log in'; err.textContent = text; err.hidden = false; }
+  if (BC.hasVault()) {
+    BC.unlock(document.getElementById('pw').value).then(function (ok) {
+      if (!ok) return fail('Wrong password.');
+      document.getElementById('pw').value = ''; btn.disabled = false; btn.textContent = 'Log in'; start();
+    });
+    return;
+  }
+  var key = document.getElementById('k').value.trim(), pw = document.getElementById('pw1').value;
+  if (!key) return fail('Paste the admin key.');
+  if (pw.length < 6) return fail('Choose a password of at least 6 characters.');
+  BC.setKey(key);
   BC.checkKey().then(function (problem) {
-    btn.disabled = false; btn.textContent = 'Log in';
-    if (problem) { BC.clearKey(); err.textContent = problem; err.hidden = false; return; }
-    document.getElementById('k').value = ''; start();
-  });
+    if (problem) { BC.clearKey(); return fail(problem); }
+    return BC.lockWithPassword(pw).then(function () {
+      document.getElementById('k').value = ''; document.getElementById('pw1').value = '';
+      btn.disabled = false; btn.textContent = 'Log in'; start();
+    });
+  }).catch(function (x) { BC.clearKey(); fail(x.message); });
 };
 
 document.getElementById('logout').onclick = function (e) {
-  e.preventDefault(); BC.clearKey(); localStorage.removeItem('bc-live-ops'); location.reload();
+  e.preventDefault(); BC.clearKey(); location.reload();
 };
 
 document.getElementById('save').onclick = function () {
